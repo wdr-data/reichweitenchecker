@@ -4,6 +4,10 @@
   "private": true,
   "homepage": "//localhost:8000/",
   "dependencies": {
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/material": "^5.10.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -12,6 +16,7 @@
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.0.2",
     "react-scripts": "5.0.1",
+    "react-window": "^1.8.7",
     "sass": "^1.54.5",
     "web-vitals": "^2.1.4"
   },
