@@ -1,11 +1,16 @@
 
-.App {
-  width: 900px;
-  margin: auto;
-  padding: 20px 0;
+.app {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
 }
 
-.MapContainer {
-  height: 800px;
+.searchField {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.mapContainer {
+  height: min(90vh, 800px);
   width: 100%;
 }

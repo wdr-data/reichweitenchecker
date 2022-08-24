@@ -1,44 +1,74 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, CircleMarker, Popup } from 'react-leaflet'
 
 import * as React from 'react'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
-const OPTIONS = ['Chicago', 'New York', 'San Francisco', 'Cologne'].sort()
-
-const COORDINATES = {
-  Chicago: [41.8781, -87.6298],
-  'New York': [40.7128, -74.0059],
-  'San Francisco': [37.7749, -122.4194],
-  Cologne: [50.9375, 6.96027]
-}
 
 function App () {
-  const [map, setMap] = useState(null)
-  const [selectedStop, setSelectedStop] = useState('Cologne')
+  const [travelStops, setTravelStops] = useState([])
+  const travelStopNames = useMemo(() => Object.keys(travelStops), [travelStops])
 
-  const handleStopChange = useCallback(
-    (event, stop) => {
-      setSelectedStop(stop);
-      map.setView(COORDINATES[stop], 10)
-    },
-    [setSelectedStop, map]
-  );
+  useEffect(() => {
+    async function fetchTravelStops () {
+      const response = await fetch(`${process.env.PUBLIC_URL}/travel_stops.json`)
+      const data = await response.json()
+      setTravelStops(data)
+    }
+    fetchTravelStops()
+  }, [])
+
+  const [map, setMap] = useState(null)
+  //const [selectedStopName, setSelectedStopName] = useState('Köln Hansaring')
+  const [selectedStop, setSelectedStop] = useState(null)
+
+  const handleStopChange = useCallback(async (event, stop) => {
+    //setSelectedStopName(stop)
+    const stopData = await (
+      await fetch(`${process.env.PUBLIC_URL}/travel_times_proc/${travelStops[stop]}.json`)
+    ).json()
+    map.setView(stopData['stop_info']['coord'], 11)
+    setSelectedStop(stopData)
+  }, [map, travelStops])
+
+  const circleMarkers = useMemo(() => {
+    if (!selectedStop) {
+      return []
+    }
+
+    return selectedStop['destinations'].map(destination => (
+      <CircleMarker
+        key={`${destination["id"]}_${destination["time"]}`}
+        center={destination['coord']}
+        pathOptions={{
+          color: '#333',
+          fillColor: destination['col'],
+          weight: 1.5,
+          fillOpacity: 0.7
+        }}
+      >
+        <Popup>
+          <b>{destination["name"]}</b><br/>
+          Erreichbar in {destination["time"] / 60} min<br/>
+          Erfordert {destination["trans"]} mal Umsteigen
+        </Popup>
+      </CircleMarker>
+    ))
+  }, [selectedStop])
 
   return (
-    <div className={styles.App}>
+    <div className={styles.app}>
       <VirtualizedAutocomplete
-        options={OPTIONS}
-        label='Haltestelle'
+        className={styles.searchField}
+        options={travelStopNames}
+        label={travelStopNames ? 'Haltestelle suchen' : 'Lade...'}
         onChange={handleStopChange}
-        defaultValue="Cologne"
+        //defaultValue='Köln Hbf'
       />
       <MapContainer
         ref={setMap}
-        className={styles.MapContainer}
-        center={COORDINATES[selectedStop]}
-        zoom={10}
+        className={styles.mapContainer}
         scrollWheelZoom={true}
         touchZoom={true}
       >
@@ -46,8 +76,11 @@ function App () {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
+
+        {circleMarkers}
+
         {selectedStop && (
-          <Marker position={COORDINATES[selectedStop]} />
+          <Marker position={selectedStop['stop_info']['coord']} />
         )}
       </MapContainer>
     </div>
