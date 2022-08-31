@@ -21,7 +21,7 @@ function App () {
   useEffect(() => {
     async function fetchTravelStops () {
       const response = await fetch(
-        `${process.env.PUBLIC_URL}/travel_stops.json`
+        `${process.env.PUBLIC_URL}/data/travel_stops.json`
       )
       const data = await response.json()
       setTravelStops(data)
