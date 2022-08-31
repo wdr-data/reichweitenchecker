@@ -1,10 +1,18 @@
-import { MapContainer, TileLayer, Marker, CircleMarker, Popup } from 'react-leaflet'
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  CircleMarker,
+  Popup
+} from 'react-leaflet'
 
 import * as React from 'react'
 import { useState, useCallback, useEffect, useMemo } from 'react'
+import Paper from '@mui/material/Paper'
 
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
+import BarChart from './BarChart'
 
 function App () {
   const [travelStops, setTravelStops] = useState([])
@@ -12,7 +20,9 @@ function App () {
 
   useEffect(() => {
     async function fetchTravelStops () {
-      const response = await fetch(`${process.env.PUBLIC_URL}/travel_stops.json`)
+      const response = await fetch(
+        `${process.env.PUBLIC_URL}/travel_stops.json`
+      )
       const data = await response.json()
       setTravelStops(data)
     }
@@ -20,17 +30,54 @@ function App () {
   }, [])
 
   const [map, setMap] = useState(null)
-  //const [selectedStopName, setSelectedStopName] = useState('Köln Hansaring')
+
+  useEffect(() => {
+    if (!map) {
+      return
+    }
+    map.fitBounds([
+      [50.3103, 5.8941],
+      [52.5295, 9.4868]
+    ])
+  }, [map])
+
   const [selectedStop, setSelectedStop] = useState(null)
 
-  const handleStopChange = useCallback(async (event, stop) => {
-    //setSelectedStopName(stop)
-    const stopData = await (
-      await fetch(`${process.env.PUBLIC_URL}/travel_times_proc/${travelStops[stop]}.json`)
-    ).json()
-    map.setView(stopData['stop_info']['coord'], 11)
-    setSelectedStop(stopData)
-  }, [map, travelStops])
+  const handleStopChange = useCallback(
+    async (event, stop) => {
+      const [responseTravelTimes, responseStopStats] = await Promise.all([
+        fetch(
+          `${process.env.PUBLIC_URL}/data/travel_times_proc/${travelStops[stop]}.json`
+        ),
+        fetch(
+          `${process.env.PUBLIC_URL}/data/stop_stats/${travelStops[stop]}.json`
+        )
+      ])
+
+      const [travelTimes, stopStats] = await Promise.all([
+        responseTravelTimes.json(),
+        responseStopStats.json()
+      ])
+
+      const stopData = {
+        ...travelTimes,
+        stats: stopStats
+      }
+
+      const destLat = stopData['destinations'].map(c => c['coord'][0])
+      const destLng = stopData['destinations'].map(c => c['coord'][1])
+      if (destLat.length > 0 && destLng.length > 0) {
+        map.fitBounds([
+          [Math.min(...destLat), Math.min(...destLng)],
+          [Math.max(...destLat), Math.max(...destLng)]
+        ])
+      } else {
+        map.setView(stopData['stop_info']['coord'], 13)
+      }
+      setSelectedStop(stopData)
+    },
+    [map, travelStops]
+  )
 
   const circleMarkers = useMemo(() => {
     if (!selectedStop) {
@@ -39,7 +86,7 @@ function App () {
 
     return selectedStop['destinations'].map(destination => (
       <CircleMarker
-        key={`${destination["id"]}_${destination["time"]}`}
+        key={`${destination['id']}_${destination['time']}`}
         center={destination['coord']}
         pathOptions={{
           color: '#333',
@@ -49,23 +96,53 @@ function App () {
         }}
       >
         <Popup>
-          <b>{destination["name"]}</b><br/>
-          Erreichbar in {destination["time"] / 60} min<br/>
-          Erfordert {destination["trans"]} mal Umsteigen
+          <b>{destination['name']}</b>
+          <br />
+          Erreichbar in {destination['time'] / 60} min
+          <br />
+          Erfordert {destination['trans']} mal Umsteigen
         </Popup>
       </CircleMarker>
     ))
   }, [selectedStop])
 
+  const chartWeekday = useMemo(() => {
+    if (!selectedStop) return null
+    const data = [
+      "Montag",
+      "Dienstag",
+      "Mittwoch",
+      "Donnerstag",
+      "Freitag",
+      "Samstag",
+      "Sonntag"
+    ].map(
+      (day) => ({ label: day, value: (selectedStop.stats['daily_departures'][day] || {})['count'] || 0 })
+    )
+    return <BarChart data={data} width={300} height={200} />
+  }, [selectedStop])
+
+
+  const chartHours = useMemo(() => {
+    if (!selectedStop) return null
+    const data = [...Array(28).keys()].map(
+      (hour) => ({ label: hour, value: (selectedStop.stats['hourly_departures'][hour] || {})['count'] || 0 })
+    )
+    return <BarChart data={data} width={300} height={200} />
+  }, [selectedStop])
+
   return (
     <div className={styles.app}>
-      <VirtualizedAutocomplete
-        className={styles.searchField}
-        options={travelStopNames}
-        label={travelStopNames ? 'Haltestelle suchen' : 'Lade...'}
-        onChange={handleStopChange}
-        //defaultValue='Köln Hbf'
-      />
+      <Paper padding={10}>
+        <VirtualizedAutocomplete
+          className={styles.searchField}
+          options={travelStopNames}
+          label={travelStopNames ? 'Haltestelle suchen' : 'Lade...'}
+          onChange={handleStopChange}
+        />
+        {chartWeekday}
+        {chartHours}
+      </Paper>
       <MapContainer
         ref={setMap}
         className={styles.mapContainer}

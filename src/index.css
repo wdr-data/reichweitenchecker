@@ -4,6 +4,10 @@
   width: 100%;
 }
 
+.leaflet-control-attribution svg {
+  display: none !important;
+}
+
 /* body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
