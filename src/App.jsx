@@ -8,7 +8,6 @@ import {
 
 import * as React from 'react'
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import Paper from '@mui/material/Paper'
 
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
@@ -17,11 +16,14 @@ import BarChart from './BarChart'
 function App () {
   const [travelStops, setTravelStops] = useState([])
   const travelStopNames = useMemo(() => Object.keys(travelStops), [travelStops])
+  const [map, setMap] = useState(null)
+  const [selectedStop, setSelectedStop] = useState(null)
 
+  // Load travel stops on page load
   useEffect(() => {
     async function fetchTravelStops () {
       const response = await fetch(
-        `${process.env.PUBLIC_URL}/data/travel_stops.json`
+        `${process.env.REACT_APP_DATA_URL}/travel_stops.json`
       )
       const data = await response.json()
       setTravelStops(data)
@@ -29,8 +31,7 @@ function App () {
     fetchTravelStops()
   }, [])
 
-  const [map, setMap] = useState(null)
-
+  // Set initial map view
   useEffect(() => {
     if (!map) {
       return
@@ -41,16 +42,15 @@ function App () {
     ])
   }, [map])
 
-  const [selectedStop, setSelectedStop] = useState(null)
-
+  // Load stop data on selection
   const handleStopChange = useCallback(
     async (event, stop) => {
       const [responseTravelTimes, responseStopStats] = await Promise.all([
         fetch(
-          `${process.env.PUBLIC_URL}/data/travel_times_proc/${travelStops[stop]}.json`
+          `${process.env.REACT_APP_DATA_URL}/travel_times_proc/${travelStops[stop]}.json`
         ),
         fetch(
-          `${process.env.PUBLIC_URL}/data/stop_stats/${travelStops[stop]}.json`
+          `${process.env.REACT_APP_DATA_URL}/stop_stats/${travelStops[stop]}.json`
         )
       ])
 
@@ -79,6 +79,7 @@ function App () {
     [map, travelStops]
   )
 
+  // Build circle markers for each destination
   const circleMarkers = useMemo(() => {
     if (!selectedStop) {
       return []
@@ -106,60 +107,70 @@ function App () {
     ))
   }, [selectedStop])
 
+  // Build bar charts for selected stop
   const chartWeekday = useMemo(() => {
     if (!selectedStop) return null
     const data = [
-      "Montag",
-      "Dienstag",
-      "Mittwoch",
-      "Donnerstag",
-      "Freitag",
-      "Samstag",
-      "Sonntag"
-    ].map(
-      (day) => ({ label: day, value: (selectedStop.stats['daily_departures'][day] || {})['count'] || 0 })
-    )
+      'Montag',
+      'Dienstag',
+      'Mittwoch',
+      'Donnerstag',
+      'Freitag',
+      'Samstag',
+      'Sonntag'
+    ].map(day => ({
+      label: day,
+      value: (selectedStop.stats['daily_departures'][day] || {})['count'] || 0
+    }))
     return <BarChart data={data} width={300} height={200} />
   }, [selectedStop])
 
-
   const chartHours = useMemo(() => {
     if (!selectedStop) return null
-    const data = [...Array(28).keys()].map(
-      (hour) => ({ label: hour, value: (selectedStop.stats['hourly_departures'][hour] || {})['count'] || 0 })
-    )
+    const data = [...Array(28).keys()].map(hour => ({
+      label: hour,
+      value: (selectedStop.stats['hourly_departures'][hour] || {})['count'] || 0
+    }))
     return <BarChart data={data} width={300} height={200} />
   }, [selectedStop])
 
   return (
     <div className={styles.app}>
-      <Paper padding={10}>
-        <VirtualizedAutocomplete
-          className={styles.searchField}
-          options={travelStopNames}
-          label={travelStopNames ? 'Haltestelle suchen' : 'Lade...'}
-          onChange={handleStopChange}
-        />
-        {chartWeekday}
-        {chartHours}
-      </Paper>
-      <MapContainer
-        ref={setMap}
-        className={styles.mapContainer}
-        scrollWheelZoom={true}
-        touchZoom={true}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-        />
+      <div className={styles.header}>
+        <h1>WDR</h1>
+      </div>
+      <div className={styles.content}>
+        <div className={styles.stopInfo}>
+          <VirtualizedAutocomplete
+            className={styles.searchField}
+            options={travelStopNames}
+            label={travelStopNames ? 'Haltestelle suchen' : 'Lade...'}
+            onChange={handleStopChange}
+          />
+          {chartWeekday}
+          {chartHours}
+        </div>
+        <MapContainer
+          ref={setMap}
+          className={styles.mapContainer}
+          scrollWheelZoom={true}
+          touchZoom={true}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          />
 
-        {circleMarkers}
+          {circleMarkers}
 
-        {selectedStop && (
-          <Marker position={selectedStop['stop_info']['coord']} />
-        )}
-      </MapContainer>
+          {selectedStop && (
+            <Marker position={selectedStop['stop_info']['coord']} />
+          )}
+        </MapContainer>
+      </div>
+      <div className={styles.footer}>
+        <span>Impressum</span>
+      </div>
     </div>
   )
 }
