@@ -4,9 +4,7 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Thesis', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -16,8 +14,8 @@ body {
 
   --brand-primary: #00345f;
   --brand-secondary: #b37500;
-  --brand-font: #1D2124;
-  --brand-font-secondary: #626A6F;
+  --brand-font: #1d2124;
+  --brand-font-secondary: #626a6f;
   --brand-link: #007381;
 }
 
@@ -31,4 +29,43 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+@font-face {
+  font-family: 'WDRSlab Regular';
+  src: url(./fonts/wdrslab-regularvz-v101-web.woff) format('woff');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'WDRSlab Bold';
+  src: url(./fonts/wdrslab-boldvz-v101-web.woff) format('woff');
+  font-display: swap;
+}
+@font-face {
+  font-family: Thesis;
+  src: url(./fonts/TheSans_LT_TT5_.woff) format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Thesis;
+  src: url(./fonts/TheSans_LT_TT5i.woff) format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: Thesis;
+  src: url(./fonts/TheSans_LT_TT7_.woff) format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: ThesisBlack;
+  src: url(./fonts/TheSans_LT_TT8_.woff) format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }

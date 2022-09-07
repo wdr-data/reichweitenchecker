@@ -1,3 +1,6 @@
+import * as React from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
+
 import {
   MapContainer,
   TileLayer,
@@ -5,17 +8,40 @@ import {
   CircleMarker,
   Popup
 } from 'react-leaflet'
-
-import * as React from 'react'
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import {Icon, Point} from 'leaflet';
+import { useElementSize } from 'usehooks-ts'
+import clsx from 'clsx'
 
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
-import BarChart from './BarChart'
+import HeatMap from './HeatMap'
+import colorMap from './colorMap'
+
+import customMarkerImg from './img/haltestelle_marker.svg'
+
+const customMarker = new Icon({
+  iconUrl: customMarkerImg,
+  iconRetinaUrl: customMarkerImg,
+  iconAnchor: new Point(17, 50),
+  popupAnchor: null,
+  shadowUrl: null,
+  shadowSize: null,
+  shadowAnchor: null,
+  iconSize: new Point(34, 50),
+});
+
+const WEEKDAYS = [
+  'Montag',
+  'Dienstag',
+  'Mittwoch',
+  'Donnerstag',
+  'Freitag',
+  'Samstag',
+  'Sonntag'
+]
 
 function App () {
   const [travelStops, setTravelStops] = useState([])
-  const travelStopNames = useMemo(() => Object.keys(travelStops), [travelStops])
   const [map, setMap] = useState(null)
   const [selectedStop, setSelectedStop] = useState(null)
 
@@ -45,12 +71,13 @@ function App () {
   // Load stop data on selection
   const handleStopChange = useCallback(
     async (event, stop) => {
+      const stopURLEncoded = encodeURIComponent(encodeURIComponent(stop))
       const [responseTravelTimes, responseStopStats] = await Promise.all([
         fetch(
-          `${process.env.REACT_APP_DATA_URL}/travel_times_proc/${travelStops[stop]}.json`
+          `${process.env.REACT_APP_DATA_URL}/travel_times_proc/${stopURLEncoded}.json`
         ),
         fetch(
-          `${process.env.REACT_APP_DATA_URL}/stop_stats/${travelStops[stop]}.json`
+          `${process.env.REACT_APP_DATA_URL}/stop_stats/${stopURLEncoded}.json`
         )
       ])
 
@@ -63,20 +90,24 @@ function App () {
         ...travelTimes,
         stats: stopStats
       }
+      stopData['destinations'].reverse() // Closest last, so markers are on top
 
       const destLat = stopData['destinations'].map(c => c['coord'][0])
       const destLng = stopData['destinations'].map(c => c['coord'][1])
-      if (destLat.length > 0 && destLng.length > 0) {
-        map.fitBounds([
-          [Math.min(...destLat), Math.min(...destLng)],
-          [Math.max(...destLat), Math.max(...destLng)]
-        ])
-      } else {
-        map.setView(stopData['stop_info']['coord'], 13)
-      }
+      window.setTimeout(() => {
+        map.invalidateSize()
+        if (destLat.length > 0 && destLng.length > 0) {
+          map.fitBounds([
+            [Math.min(...destLat), Math.min(...destLng)],
+            [Math.max(...destLat), Math.max(...destLng)]
+          ])
+        } else {
+          map.setView(stopData['stop_info']['coord'], 13)
+        }
+      }, 100)
       setSelectedStop(stopData)
     },
-    [map, travelStops]
+    [map]
   )
 
   // Build circle markers for each destination
@@ -90,10 +121,10 @@ function App () {
         key={`${destination['id']}_${destination['time']}`}
         center={destination['coord']}
         pathOptions={{
-          color: '#333',
-          fillColor: destination['col'],
-          weight: 1.5,
-          fillOpacity: 0.7
+          color: '#000',
+          fillColor: colorMap(destination['time'] / 3600),
+          weight: 0.2, // 1.5,
+          fillOpacity: 0.9
         }}
       >
         <Popup>
@@ -107,23 +138,21 @@ function App () {
     ))
   }, [selectedStop])
 
+  const [
+    chartsRef,
+    { width: chartsWidth, height: chartsHeight }
+  ] = useElementSize()
+
   // Build bar charts for selected stop
+  /*
   const chartWeekday = useMemo(() => {
     if (!selectedStop) return null
-    const data = [
-      'Montag',
-      'Dienstag',
-      'Mittwoch',
-      'Donnerstag',
-      'Freitag',
-      'Samstag',
-      'Sonntag'
-    ].map(day => ({
+    const data = WEEKDAYS.map(day => ({
       label: day,
       value: (selectedStop.stats['daily_departures'][day] || {})['count'] || 0
     }))
-    return <BarChart data={data} width={300} height={200} />
-  }, [selectedStop])
+    return <BarChart data={data} width={(infoWidth / 2) - 20} height={infoWidth * 0.25} />
+  }, [selectedStop, infoWidth])
 
   const chartHours = useMemo(() => {
     if (!selectedStop) return null
@@ -131,24 +160,49 @@ function App () {
       label: hour,
       value: (selectedStop.stats['hourly_departures'][hour] || {})['count'] || 0
     }))
-    return <BarChart data={data} width={300} height={200} />
-  }, [selectedStop])
+    return <BarChart data={data} width={(infoWidth / 2) - 20} height={infoWidth * 0.25} />
+  }, [selectedStop, infoWidth])
+  */
+
+  const heatmap = useMemo(() => {
+    if (!selectedStop) return null
+    return (
+      <HeatMap
+        className={styles.heatmap}
+        width={chartsWidth}
+        height={250}
+        data={selectedStop.stats['heatmap']}
+      />
+    )
+  }, [selectedStop, chartsWidth])
 
   return (
     <div className={styles.app}>
       <div className={styles.header}>
-        <h1>WDR</h1>
+        <a href='https://wdr.de/'>
+          <img
+            src={`${process.env.PUBLIC_URL}/wdr_logo.svg`}
+            alt='WDR Logo'
+            className={styles.logo}
+          />
+        </a>
       </div>
       <div className={styles.content}>
         <div className={styles.stopInfo}>
           <VirtualizedAutocomplete
-            className={styles.searchField}
-            options={travelStopNames}
-            label={travelStopNames ? 'Haltestelle suchen' : 'Lade...'}
+            className={clsx(
+              styles.searchField,
+              !selectedStop && styles.searchFieldInitial
+            )}
+            options={travelStops}
+            label={travelStops ? 'Haltestelle suchen' : 'Lade...'}
             onChange={handleStopChange}
           />
-          {chartWeekday}
-          {chartHours}
+          <div className={styles.charts} ref={chartsRef}>
+            {/* {chartWeekday}
+            {chartHours} */}
+            {heatmap}
+          </div>
         </div>
         <MapContainer
           ref={setMap}
@@ -164,12 +218,14 @@ function App () {
           {circleMarkers}
 
           {selectedStop && (
-            <Marker position={selectedStop['stop_info']['coord']} />
+            <Marker icon={customMarker} position={selectedStop['stop_info']['coord']} />
           )}
         </MapContainer>
       </div>
       <div className={styles.footer}>
-        <span>Impressum</span>
+        <span>&copy; WDR 2022</span>&nbsp;|&nbsp;
+        <span>Impressum</span>&nbsp;|&nbsp;
+        <span>Datenschutz</span>
       </div>
     </div>
   )

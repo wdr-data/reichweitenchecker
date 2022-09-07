@@ -10,9 +10,12 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "@visx/axis": "^2.12.2",
     "@visx/group": "^2.10.0",
+    "@visx/heatmap": "^2.10.0",
     "@visx/scale": "^2.2.2",
     "@visx/shape": "^2.12.2",
+    "d3-scale-chromatic": "^3.0.0",
     "leaflet": "^1.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -20,6 +23,7 @@
     "react-scripts": "5.0.1",
     "react-window": "^1.8.7",
     "sass": "^1.54.5",
+    "usehooks-ts": "^2.6.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

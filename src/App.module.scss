@@ -15,9 +15,9 @@
   background-color: var(--brand-primary);
   height: 50px;
 
-  h1 {
-    margin: 0 10px;
-    color: white;
+  .logo {
+    margin: 10px 13px;
+    height: 27px;
   }
 }
 
@@ -28,14 +28,31 @@
   flex-direction: row;
 
   .stopInfo {
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    width: 400px;
+    width: 300px;
+    max-width: 300px;
     padding: 1rem;
+
     .searchField {
       width: unset;
       margin-bottom: 1rem;
+    }
+    .searchFieldInitial {
+      margin-bottom: 0;
+    }
+    .charts {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      overflow: visible;
+
+      .heatmap {
+      }
     }
   }
   .mapContainer {
@@ -46,11 +63,10 @@
 
 .footer {
   color: white;
-  height: 25px;
+  height: 22px;
+  padding: 2px 6px;
   background-color: var(--brand-primary);
 }
-
-
 
 
 
@@ -59,6 +75,7 @@
     flex-direction: column;
   .stopInfo {
     width: unset;
+    max-width: unset;
     max-height: 40%;
     overflow: scroll;
   }
