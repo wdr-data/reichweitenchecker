@@ -6,7 +6,7 @@ import { AxisLeft, AxisBottom, AxisRight } from '@visx/axis'
 import { Text } from '@visx/text';
 import { useMemo } from 'react'
 
-import colorMap from './colorMap'
+import {colorMapMain, colorMapAlt} from './colorMap'
 
 const WEEKDAYS = [
   'Montag',
@@ -77,7 +77,7 @@ const HeatMap = ({ width, height, data, ...rest }) => {
     domain: [0, bucketSizeMax],
     range: [0, yMax]
   })
-  const colorScale = n => colorMap(1 - n / colorMax)
+  const colorScale = n => n > 0 ? colorMapMain(1 - n / colorMax) : '#f8f8f8'
 
   // scales for axes
   const weekdayScale = scaleOrdinal({

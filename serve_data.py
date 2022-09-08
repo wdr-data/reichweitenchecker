@@ -28,6 +28,6 @@ if __name__ == "__main__":
         HandlerClass=CORSRequestHandler,
         ServerClass=DualStackServer,
         port=9001,
-        bind="localhost",
+        bind="192.168.2.69",
         protocol="HTTP/1.1",
     )

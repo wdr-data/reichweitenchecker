@@ -7,6 +7,11 @@ import Popper from '@mui/material/Popper';
 import { useTheme, styled } from '@mui/material/styles';
 import { VariableSizeList } from 'react-window';
 import Typography from '@mui/material/Typography';
+import { matchSorter } from 'match-sorter';
+
+
+const filterOptions = (options, { inputValue }) => matchSorter(options, inputValue);
+
 
 const LISTBOX_PADDING = 8; // px
 
@@ -76,8 +81,8 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(props, ref) 
   };
 
   const getHeight = () => {
-    if (itemCount > 8) {
-      return 8 * itemSize;
+    if (itemCount > 10) {
+      return 10 * itemSize;
     }
     return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
   };
@@ -120,10 +125,10 @@ export default function VirtualizedAutocomplete({label, ...props}) {
     <Autocomplete
       id="virtualize-demo"
       sx={{ width: 300 }}
+      filterOptions={filterOptions}
       disableListWrap
       PopperComponent={StyledPopper}
       ListboxComponent={ListboxComponent}
-      groupBy={(option) => option[0].toUpperCase()}
       renderInput={(params) => <TextField {...params} label={label} />}
       renderOption={(props, option) => [props, option]}
       renderGroup={(params) => params}

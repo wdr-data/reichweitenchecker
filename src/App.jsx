@@ -15,7 +15,7 @@ import clsx from 'clsx'
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
 import HeatMap from './HeatMap'
-import colorMap from './colorMap'
+import {colorMapMain, colorMapAlt} from './colorMap'
 
 import customMarkerImg from './img/haltestelle_marker.svg'
 
@@ -39,6 +39,22 @@ const WEEKDAYS = [
   'Samstag',
   'Sonntag'
 ]
+
+function fixedEncodeURIComponent(str) {
+  return encodeURIComponent(str).replace(
+    /[!'()*]/g,
+    (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
+}
+
+function encodeFileName(fileName) {
+  return encodeURIComponent(
+    encodeURIComponent(
+      fixedEncodeURIComponent(fileName)
+    )
+  )
+}
+
 
 function App () {
   const [travelStops, setTravelStops] = useState([])
@@ -71,7 +87,7 @@ function App () {
   // Load stop data on selection
   const handleStopChange = useCallback(
     async (event, stop) => {
-      const stopURLEncoded = encodeURIComponent(encodeURIComponent(stop))
+      const stopURLEncoded = encodeFileName(stop)
       const [responseTravelTimes, responseStopStats] = await Promise.all([
         fetch(
           `${process.env.REACT_APP_DATA_URL}/travel_times_proc/${stopURLEncoded}.json`
@@ -122,7 +138,7 @@ function App () {
         center={destination['coord']}
         pathOptions={{
           color: '#000',
-          fillColor: colorMap(destination['time'] / 3600),
+          fillColor: colorMapMain(destination['time'] / 3600),
           weight: 0.2, // 1.5,
           fillOpacity: 0.9
         }}
@@ -195,8 +211,12 @@ function App () {
               !selectedStop && styles.searchFieldInitial
             )}
             options={travelStops}
-            label={travelStops ? 'Haltestelle suchen' : 'Lade...'}
+            label='Haltestelle suchen'
             onChange={handleStopChange}
+            loadingText="Wird geladen..."
+            noOptionsText="Keine Ergebnisse"
+            blurOnSelect={true}
+            loading={!travelStops}
           />
           <div className={styles.charts} ref={chartsRef}>
             {/* {chartWeekday}

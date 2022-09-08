@@ -2,6 +2,10 @@
   display: none !important;
 }
 
+html {
+  height: 100vh;
+}
+
 body {
   margin: 0;
   font-family: 'Thesis', sans-serif;
@@ -17,13 +21,16 @@ body {
   --brand-font: #1d2124;
   --brand-font-secondary: #626a6f;
   --brand-link: #007381;
+
+  background-color: var(--brand-primary);
 }
 
 #map-widget {
-  position: relative;
+  position: fixed;
   width: 100%;
   height: 100%;
   margin: 0 auto;
+  background-color: white;
 }
 
 code {
