@@ -87,6 +87,9 @@ function App () {
   // Load stop data on selection
   const handleStopChange = useCallback(
     async (event, stop) => {
+      if (!stop) {
+        return
+      }
       const stopURLEncoded = encodeFileName(stop)
       const [responseTravelTimes, responseStopStats] = await Promise.all([
         fetch(
@@ -139,6 +142,7 @@ function App () {
         pathOptions={{
           color: '#000',
           fillColor: colorMapMain(destination['time'] / 3600),
+          //fillColor: colorMapMain(Math.min(destination['trans'], 3) / 3),
           weight: 0.2, // 1.5,
           fillOpacity: 0.9
         }}
@@ -158,27 +162,6 @@ function App () {
     chartsRef,
     { width: chartsWidth, height: chartsHeight }
   ] = useElementSize()
-
-  // Build bar charts for selected stop
-  /*
-  const chartWeekday = useMemo(() => {
-    if (!selectedStop) return null
-    const data = WEEKDAYS.map(day => ({
-      label: day,
-      value: (selectedStop.stats['daily_departures'][day] || {})['count'] || 0
-    }))
-    return <BarChart data={data} width={(infoWidth / 2) - 20} height={infoWidth * 0.25} />
-  }, [selectedStop, infoWidth])
-
-  const chartHours = useMemo(() => {
-    if (!selectedStop) return null
-    const data = [...Array(28).keys()].map(hour => ({
-      label: hour,
-      value: (selectedStop.stats['hourly_departures'][hour] || {})['count'] || 0
-    }))
-    return <BarChart data={data} width={(infoWidth / 2) - 20} height={infoWidth * 0.25} />
-  }, [selectedStop, infoWidth])
-  */
 
   const heatmap = useMemo(() => {
     if (!selectedStop) return null
@@ -211,16 +194,17 @@ function App () {
               !selectedStop && styles.searchFieldInitial
             )}
             options={travelStops}
-            label='Haltestelle suchen'
             onChange={handleStopChange}
-            loadingText="Wird geladen..."
-            noOptionsText="Keine Ergebnisse"
             blurOnSelect={true}
             loading={!travelStops}
+            label='Haltestelle suchen'
+            loadingText="Wird geladen..."
+            noOptionsText="Keine Ergebnisse"
+            clearText="Leeren"
+            closeText="Schließen"
+            openText="Öffnen"
           />
           <div className={styles.charts} ref={chartsRef}>
-            {/* {chartWeekday}
-            {chartHours} */}
             {heatmap}
           </div>
         </div>

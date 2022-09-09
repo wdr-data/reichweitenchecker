@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import TextField from '@mui/material/TextField';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -8,9 +9,7 @@ import { useTheme, styled } from '@mui/material/styles';
 import { VariableSizeList } from 'react-window';
 import Typography from '@mui/material/Typography';
 import { matchSorter } from 'match-sorter';
-
-
-const filterOptions = (options, { inputValue }) => matchSorter(options, inputValue);
+import { debounce } from '@mui/material';
 
 
 const LISTBOX_PADDING = 8; // px
@@ -120,18 +119,61 @@ const StyledPopper = styled(Popper)({
   },
 });
 
-export default function VirtualizedAutocomplete({label, ...props}) {
+export default function VirtualizedAutocomplete({label, loading, options, ...props}) {
+  /*
+  Kinda convoluted debounced search to fix performance issues
+  */
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncing, setDebouncing] = useState(false);
+
+  const acceptSearchQuery = useCallback((query) => {
+    setSearchQuery(query);
+    setDebouncing(false);
+  }, []);
+
+  const setSearchQueryDebounced = useMemo(() => {
+    return debounce(acceptSearchQuery, 500);
+  }, [acceptSearchQuery]);
+
+  useEffect(() => {
+    return () => {
+      setSearchQueryDebounced.clear();
+    };
+  }, [setSearchQueryDebounced]);
+
+  const handleSearchQueryChange = useCallback((event) => {
+    const query = event.target.value;
+    setSearchQueryDebounced(query);
+    setDebouncing(true);
+  }, [setSearchQueryDebounced]);
+
+  const filteredOptions = useMemo(() => {
+    if (!options || debouncing) { return []; }
+    if (searchQuery === '') {
+      return options;
+    }
+    return matchSorter(options, searchQuery);
+  }, [options, searchQuery, debouncing]);
+
+  // We don't need Autocomplete to do any filtering or checking since we do it ourselves
+  const dummyFilter = useCallback((options) => options, []);
+
+  // Do some memos to avoid rerenders
+  const renderInputMemo = useCallback((params) => <TextField {...params} onChange={handleSearchQueryChange} label={label} />, [handleSearchQueryChange, label]);
+
   return (
     <Autocomplete
       id="virtualize-demo"
       sx={{ width: 300 }}
-      filterOptions={filterOptions}
+      filterOptions={dummyFilter}
       disableListWrap
       PopperComponent={StyledPopper}
       ListboxComponent={ListboxComponent}
-      renderInput={(params) => <TextField {...params} label={label} />}
+      renderInput={renderInputMemo}
       renderOption={(props, option) => [props, option]}
       renderGroup={(params) => params}
+      loading={debouncing || loading}
+      options={filteredOptions}
       {...props}
     />
   );
