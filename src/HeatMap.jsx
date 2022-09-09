@@ -3,10 +3,22 @@ import { Group } from '@visx/group'
 import { scaleLinear, scaleOrdinal } from '@visx/scale'
 import { HeatmapRect } from '@visx/heatmap'
 import { AxisLeft, AxisBottom, AxisRight } from '@visx/axis'
+import { useTooltip, useTooltipInPortal, defaultStyles as defaultTooltipStyles } from '@visx/tooltip';
 import { Text } from '@visx/text';
+import { localPoint } from '@visx/event';
 import { useMemo } from 'react'
 
 import {colorMapMain, colorMapAlt} from './colorMap'
+
+const tooltipStyles = {
+  ...defaultTooltipStyles,
+  width: 20,
+  fontSize: 16,
+  textAlign: 'center',
+  backgroundColor: 'rgba(0,0,0,0.9)',
+  color: 'white',
+};
+
 
 const WEEKDAYS = [
   'Montag',
@@ -32,6 +44,8 @@ const count = d => d.count
 
 const margin = { top: 15, left: 30, right: 40, bottom: 40 }
 
+let tooltipTimeout;
+
 const HeatMap = ({ width, height, data, ...rest }) => {
   // data structure looks like this:
   /*
@@ -43,6 +57,15 @@ const HeatMap = ({ width, height, data, ...rest }) => {
  'Samstag': [62, 131, 196, 192, 199, 206],
  'Sonntag': [65, 102, 179, 190, 187, 211]}
  */
+
+  const { tooltipOpen, tooltipLeft, tooltipTop, tooltipData, hideTooltip, showTooltip } = useTooltip();
+
+  const { containerRef, TooltipInPortal } = useTooltipInPortal({
+  // TooltipInPortal is rendered in a separate child of <body /> and positioned
+  // with page coordinates which should be updated on scroll. consider using
+  // Tooltip or TooltipWithBounds if you don't need to render inside a Portal
+  scroll: true,
+  });
 
   const binData = useMemo(
     () =>
@@ -103,7 +126,8 @@ const HeatMap = ({ width, height, data, ...rest }) => {
   })
 
   return width < 10 ? null : (
-    <svg width={width} height={height} {...rest}>
+    <>
+    <svg width={width} height={height} ref={containerRef} {...rest}>
       <Group top={margin.top} left={margin.left}>
         <AxisLeft
           scale={weekdayScale}
@@ -158,6 +182,24 @@ const HeatMap = ({ width, height, data, ...rest }) => {
                   //   const { row, column } = bin;
                   //   alert(JSON.stringify({ row, column, bin: bin.bin }));
                   // }}
+
+                  onMouseLeave={() => {
+                    tooltipTimeout = window.setTimeout(() => {
+                      hideTooltip();
+                    }, 300);
+                  }}
+                  onMouseMove={(event) => {
+                    if (tooltipTimeout) clearTimeout(tooltipTimeout);
+                    // TooltipInPortal expects coordinates to be relative to containerRef
+                    // localPoint returns coordinates relative to the nearest SVG, which
+                    // is what containerRef is set to in this example.
+                    const eventSvgCoords = localPoint(event);
+                    showTooltip({
+                      tooltipData: bin,
+                      tooltipTop: eventSvgCoords.y,
+                      tooltipLeft: eventSvgCoords.x,
+                    });
+                  }}
                 />
               ))
             )
@@ -165,6 +207,13 @@ const HeatMap = ({ width, height, data, ...rest }) => {
         </HeatmapRect>
       </Group>
     </svg>
+
+    {tooltipOpen && tooltipData && (
+        <TooltipInPortal top={tooltipTop - 40} left={tooltipLeft - 28} style={tooltipStyles}>
+          {tooltipData.count}
+        </TooltipInPortal>
+      )}
+    </>
   )
 }
 
