@@ -70,6 +70,7 @@ function fixedEncodeURIComponent (str) {
 function encodeFileName (fileName) {
   return encodeURIComponent(
     encodeURIComponent(fixedEncodeURIComponent(fileName))
+    //fixedEncodeURIComponent(fileName)
   )
 }
 
@@ -238,14 +239,18 @@ function App () {
     () =>
       selectedStop && (
         <p>
-          An einem Montag zwischen 6 und 20 Uhr gibt es an dieser Station
+          An einem Wochentag zwischen 6 und 20 Uhr gibt es an dieser Station
           durchschnittlich{' '}
           <b>
             {format(
               (
-                selectedStop.stats['heatmap']['Montag']
-                  .slice(7, 20)
-                  .reduce((a, b) => a + b, 0) / 13
+                WEEKDAYS.slice(0, 5)
+                  .map(day => selectedStop.stats['heatmap'][day])
+                  .map(
+                    weekdayData =>
+                      weekdayData.slice(5, 20).reduce((a, b) => a + b, 0) / 15
+                  )
+                  .reduce((a, b) => a + b, 0) / 5
               ).toFixed(1)
             )}
           </b>{' '}
@@ -254,8 +259,8 @@ function App () {
             {format(
               (
                 selectedStop.stats['heatmap']['Samstag']
-                  .slice(7, 20)
-                  .reduce((a, b) => a + b, 0) / 13
+                  .slice(5, 20)
+                  .reduce((a, b) => a + b, 0) / 15
               ).toFixed(1)
             )}
           </b>{' '}
@@ -264,8 +269,8 @@ function App () {
             {format(
               (
                 selectedStop.stats['heatmap']['Sonntag']
-                  .slice(7, 20)
-                  .reduce((a, b) => a + b, 0) / 13
+                  .slice(5, 20)
+                  .reduce((a, b) => a + b, 0) / 15
               ).toFixed(1)
             )}
           </b>
@@ -347,13 +352,18 @@ function App () {
             clearText='Leeren'
             closeText='Schließen'
             openText='Öffnen'
+            size='small'
           />
           {selectedStop && (
             <div className={styles.charts} ref={chartsRef}>
-              {routeTypes}
+              <h2 className={styles.stopName}>
+                {selectedStop.stats['stop_name']}
+              </h2>
+              {heatmapExplanation}
               <h3 className={styles.chartTitle}>Abfahrten pro Stunde</h3>
               {heatmap}
-              {heatmapExplanation}
+              <h3 className={styles.chartTitle}>Verkehrsmittel</h3>
+              {routeTypes}
             </div>
           )}
         </div>
