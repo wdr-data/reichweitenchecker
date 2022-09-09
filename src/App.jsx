@@ -68,6 +68,7 @@ function encodeFileName(fileName) {
   )
 }
 
+const startStopName = decodeURIComponent(window.location.hash.slice(1));
 
 function App () {
   const [travelStops, setTravelStops] = useState([])
@@ -138,9 +139,18 @@ function App () {
         }
       }, 100)
       setSelectedStop(stopData)
+      window.location.hash = fixedEncodeURIComponent(stop)
     },
     [map]
   )
+
+  // Load stop from URL location hash
+  useEffect(() => {
+    if (!travelStops || !map) return;
+    if (window.location.hash) {
+      handleStopChange(null, decodeURIComponent(window.location.hash.slice(1)));
+    }
+  }, [travelStops, handleStopChange, map])
 
   // Build circle markers for each destination
   const circleMarkers = useMemo(() => {
@@ -247,6 +257,7 @@ function App () {
               styles.searchField,
               !selectedStop && styles.searchFieldInitial
             )}
+            defaultValue={startStopName}
             options={travelStops}
             onChange={handleStopChange}
             blurOnSelect={true}
