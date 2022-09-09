@@ -178,7 +178,7 @@ function App () {
       }
       return (
         <CircleMarker
-          key={`${destination['id']}_${destination['time']}`}
+          key={`${destination['id']}_${destination['time']}_${mapShowTransfers}`}
           center={destination['coord']}
           pathOptions={{
             color: '#000',
