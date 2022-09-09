@@ -8,17 +8,17 @@ import {
   CircleMarker,
   Popup
 } from 'react-leaflet'
-import {Icon, Point} from 'leaflet';
+import { Icon, Point } from 'leaflet'
 import { useElementSize } from 'usehooks-ts'
 import clsx from 'clsx'
-import Typography from '@mui/material/Typography';
-import Switch from '@mui/material/Switch';
-import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography'
+import Switch from '@mui/material/Switch'
+import Stack from '@mui/material/Stack'
 
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
 import HeatMap from './HeatMap'
-import {colorMapMain, colorMapAlt} from './colorMap'
+import { colorMapMain, colorMapAlt } from './colorMap'
 
 import customMarkerImg from './img/haltestelle_marker.svg'
 
@@ -30,8 +30,8 @@ const customMarker = new Icon({
   shadowUrl: null,
   shadowSize: null,
   shadowAnchor: null,
-  iconSize: new Point(34, 50),
-});
+  iconSize: new Point(34, 50)
+})
 
 const WEEKDAYS = [
   'Montag',
@@ -44,41 +44,42 @@ const WEEKDAYS = [
 ]
 
 const colorMapRouteTypes = {
-  "Kabel-Straßenbahn": "#fb9a99",
-  "Straßenbahn": "#e31a1c",
-  "S-Bahn": "#33a02c",
-  "U-Bahn": "#1f78b4",
-  "Bahn": "#a6cee3",
-  "Regionalbahn": "#b2df8a",
-  "Fernzug": "#fdbf6f",
-  "Hochgeschwindigkeitszug": "#ff7f00",
-  "Fähre": "#cab2d6",
-  "Bus": "#6a3d9a",
+  'Kabel-Straßenbahn': '#fb9a99',
+  Straßenbahn: '#e31a1c',
+  'S-Bahn': '#33a02c',
+  'U-Bahn': '#1f78b4',
+  Bahn: '#a6cee3',
+  Regionalbahn: '#b2df8a',
+  Fernzug: '#fdbf6f',
+  Hochgeschwindigkeitszug: '#ff7f00',
+  Fähre: '#cab2d6',
+  Bus: '#6a3d9a'
 }
 
-function fixedEncodeURIComponent(str) {
+function fixedEncodeURIComponent (str) {
   return encodeURIComponent(str).replace(
     /[!'()*]/g,
-    (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
-  );
-}
-
-function encodeFileName(fileName) {
-  return encodeURIComponent(
-    encodeURIComponent(
-      fixedEncodeURIComponent(fileName)
-    )
+    c =>
+      `%${c
+        .charCodeAt(0)
+        .toString(16)
+        .toUpperCase()}`
   )
 }
 
+function encodeFileName (fileName) {
+  return encodeURIComponent(
+    encodeURIComponent(fixedEncodeURIComponent(fileName))
+  )
+}
 
 const numberFormatter = new Intl.NumberFormat('de-DE')
 
-function format(number) {
+function format (number) {
   return numberFormatter.format(number)
 }
 
-const startStopName = decodeURIComponent(window.location.hash.slice(1));
+const startStopName = decodeURIComponent(window.location.hash.slice(1))
 
 function App () {
   const [travelStops, setTravelStops] = useState([])
@@ -156,9 +157,9 @@ function App () {
 
   // Load stop from URL location hash
   useEffect(() => {
-    if (!travelStops || !map) return;
+    if (!travelStops || !map) return
     if (window.location.hash) {
-      handleStopChange(null, decodeURIComponent(window.location.hash.slice(1)));
+      handleStopChange(null, decodeURIComponent(window.location.hash.slice(1)))
     }
   }, [travelStops, handleStopChange, map])
 
@@ -170,40 +171,45 @@ function App () {
       return []
     }
 
-    return selectedStop["destinations"].map(destination => {
+    return selectedStop['destinations'].map(destination => {
       if (!mapShowTransfers && destination['trans'] > 0) {
         return null
       }
       return (
-      <CircleMarker
-        key={`${destination['id']}_${destination['time']}`}
-        center={destination['coord']}
-        pathOptions={{
-          color: '#000',
-          fillColor: colorMapMain(destination['time'] / 3600),
-          //fillColor: colorMapMain(Math.min(destination['trans'], 3) / 3),
-          weight: 0.2, // 1.5,
-          fillOpacity: 0.9
-        }}
-      >
-        <Popup>
-          <b>{destination['name']}</b>
-          <br />
-          Erreichbar in {destination['time'] / 60} min
-          <br />
-          Erfordert {destination['trans']} mal Umsteigen
-        </Popup>
-      </CircleMarker>
-    )})
+        <CircleMarker
+          key={`${destination['id']}_${destination['time']}`}
+          center={destination['coord']}
+          pathOptions={{
+            color: '#000',
+            fillColor: colorMapMain(destination['time'] / 3600),
+            //fillColor: colorMapMain(Math.min(destination['trans'], 3) / 3),
+            weight: 0.2, // 1.5,
+            fillOpacity: 0.9
+          }}
+        >
+          <Popup>
+            <b>{destination['name']}</b>
+            <br />
+            Erreichbar in {destination['time'] / 60} min
+            <br />
+            Erfordert {destination['trans']} mal Umsteigen
+          </Popup>
+        </CircleMarker>
+      )
+    })
   }, [selectedStop, mapShowTransfers])
 
   const mapControls = useMemo(() => {
     return (
       <div className={styles.customMapControls}>
         <div className={styles.customMapControl}>
-          <Stack direction="row" spacing={0} alignItems="center">
+          <Stack direction='row' spacing={0} alignItems='center'>
             <Typography>Ohne Umsteigen</Typography>
-            <Switch defaultChecked onChange={(ev, checked) => setMapShowTransfers(checked)} inputProps={{ 'aria-label': 'Mit Umsteigen' }} />
+            <Switch
+              defaultChecked
+              onChange={(ev, checked) => setMapShowTransfers(checked)}
+              inputProps={{ 'aria-label': 'Mit Umsteigen' }}
+            />
             <Typography>Mit Umsteigen</Typography>
           </Stack>
         </div>
@@ -228,24 +234,58 @@ function App () {
     )
   }, [selectedStop, chartsWidth])
 
-  const heatmapExplanation = useMemo(() => selectedStop && (
-    <p>An einem Montag zwischen 6 und 20 Uhr gibt es an dieser Station durchschnittlich{' '}
-      <b>{format((selectedStop.stats["heatmap"]["Montag"].slice(7, 20).reduce((a, b) => a + b, 0) / 13).toFixed(1))}</b>{' '}
-      Abfahrten pro Stunde, an einem Samstag sind es{' '}
-      <b>{format((selectedStop.stats["heatmap"]["Samstag"].slice(7, 20).reduce((a, b) => a + b, 0) / 13).toFixed(1))}</b>{' '}
-      und an einem Sonntag{' '}
-      <b>{format((selectedStop.stats["heatmap"]["Sonntag"].slice(7, 20).reduce((a, b) => a + b, 0) / 13).toFixed(1))}</b>.
-    </p>), [selectedStop]);
+  const heatmapExplanation = useMemo(
+    () =>
+      selectedStop && (
+        <p>
+          An einem Montag zwischen 6 und 20 Uhr gibt es an dieser Station
+          durchschnittlich{' '}
+          <b>
+            {format(
+              (
+                selectedStop.stats['heatmap']['Montag']
+                  .slice(7, 20)
+                  .reduce((a, b) => a + b, 0) / 13
+              ).toFixed(1)
+            )}
+          </b>{' '}
+          Abfahrten pro Stunde, an einem Samstag sind es{' '}
+          <b>
+            {format(
+              (
+                selectedStop.stats['heatmap']['Samstag']
+                  .slice(7, 20)
+                  .reduce((a, b) => a + b, 0) / 13
+              ).toFixed(1)
+            )}
+          </b>{' '}
+          und an einem Sonntag{' '}
+          <b>
+            {format(
+              (
+                selectedStop.stats['heatmap']['Sonntag']
+                  .slice(7, 20)
+                  .reduce((a, b) => a + b, 0) / 13
+              ).toFixed(1)
+            )}
+          </b>
+          .
+        </p>
+      ),
+    [selectedStop]
+  )
 
   const routeTypes = useMemo(() => {
     if (!selectedStop) return null
 
-    const routeTypes = selectedStop.stats['vehicle_types']  // TODO: rename to route_types
+    const routeTypes = selectedStop.stats['vehicle_types'] // TODO: rename to route_types
     const total = Object.values(routeTypes).reduce((a, b) => a + b, 0)
-    const routeTypePercentages = Object.entries(routeTypes).map(([key, value]) => ({
-      type: key,
-      percentage: value / total * 100,
-    })).sort((a, b) => b.percentage - a.percentage)
+    const routeTypePercentages = Object.entries(routeTypes)
+      .map(([key, value]) => ({
+        type: key,
+        percentage: (value / total) * 100
+      }))
+      .sort((a, b) => b.percentage - a.percentage)
 
     return (
       <div className={styles.routeTypes}>
@@ -256,7 +296,7 @@ function App () {
               className={styles.routeType}
               style={{
                 width: `${percentage}%`,
-                backgroundColor: colorMapRouteTypes[type],
+                backgroundColor: colorMapRouteTypes[type]
               }}
             />
           ))}
@@ -276,7 +316,7 @@ function App () {
         </div>
       </div>
     )
-  }, [selectedStop]);
+  }, [selectedStop])
 
   return (
     <div className={styles.app}>
@@ -302,21 +342,19 @@ function App () {
             blurOnSelect={true}
             loading={!travelStops}
             label='Haltestelle suchen'
-            loadingText="Wird geladen..."
-            noOptionsText="Keine Ergebnisse"
-            clearText="Leeren"
-            closeText="Schließen"
-            openText="Öffnen"
+            loadingText='Wird geladen...'
+            noOptionsText='Keine Ergebnisse'
+            clearText='Leeren'
+            closeText='Schließen'
+            openText='Öffnen'
           />
           {selectedStop && (
-          <div className={styles.charts} ref={chartsRef}>
-            {routeTypes}
-            <h3 className={styles.chartTitle}>
-              Abfahrten pro Stunde
-            </h3>
-            {heatmap}
-            {heatmapExplanation}
-          </div>
+            <div className={styles.charts} ref={chartsRef}>
+              {routeTypes}
+              <h3 className={styles.chartTitle}>Abfahrten pro Stunde</h3>
+              {heatmap}
+              {heatmapExplanation}
+            </div>
           )}
         </div>
         <MapContainer
@@ -333,7 +371,10 @@ function App () {
           {circleMarkers}
 
           {selectedStop && (
-            <Marker icon={customMarker} position={selectedStop['stop_info']['coord']} />
+            <Marker
+              icon={customMarker}
+              position={selectedStop['stop_info']['coord']}
+            />
           )}
           {mapControls}
         </MapContainer>
