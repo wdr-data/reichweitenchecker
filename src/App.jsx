@@ -11,6 +11,9 @@ import {
 import {Icon, Point} from 'leaflet';
 import { useElementSize } from 'usehooks-ts'
 import clsx from 'clsx'
+import Typography from '@mui/material/Typography';
+import Switch from '@mui/material/Switch';
+import Stack from '@mui/material/Stack';
 
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
@@ -41,12 +44,12 @@ const WEEKDAYS = [
 ]
 
 const colorMapRouteTypes = {
-  "Kabel-Straßenbahn": "#a6cee3",
-  "Straßenbahn": "#1f78b4",
-  "S-Bahn": "#b2df8a",
-  "U-Bahn": "#33a02c",
-  "Bahn": "#fb9a99",
-  "Regionalbahn": "#e31a1c",
+  "Kabel-Straßenbahn": "#fb9a99",
+  "Straßenbahn": "#e31a1c",
+  "S-Bahn": "#33a02c",
+  "U-Bahn": "#1f78b4",
+  "Bahn": "#a6cee3",
+  "Regionalbahn": "#b2df8a",
   "Fernzug": "#fdbf6f",
   "Hochgeschwindigkeitszug": "#ff7f00",
   "Fähre": "#cab2d6",
@@ -152,13 +155,19 @@ function App () {
     }
   }, [travelStops, handleStopChange, map])
 
+  const [mapShowTransfers, setMapShowTransfers] = useState(true)
+
   // Build circle markers for each destination
   const circleMarkers = useMemo(() => {
     if (!selectedStop) {
       return []
     }
 
-    return selectedStop['destinations'].map(destination => (
+    return selectedStop["destinations"].map(destination => {
+      if (!mapShowTransfers && destination['trans'] > 0) {
+        return null
+      }
+      return (
       <CircleMarker
         key={`${destination['id']}_${destination['time']}`}
         center={destination['coord']}
@@ -178,8 +187,22 @@ function App () {
           Erfordert {destination['trans']} mal Umsteigen
         </Popup>
       </CircleMarker>
-    ))
-  }, [selectedStop])
+    )})
+  }, [selectedStop, mapShowTransfers])
+
+  const mapControls = useMemo(() => {
+    return (
+      <div className={styles.customMapControls}>
+        <div className={styles.customMapControl}>
+          <Stack direction="row" spacing={0} alignItems="center">
+            <Typography>Ohne Umsteigen</Typography>
+            <Switch defaultChecked onChange={(ev, checked) => setMapShowTransfers(checked)} inputProps={{ 'aria-label': 'Mit Umsteigen' }} />
+            <Typography>Mit Umsteigen</Typography>
+          </Stack>
+        </div>
+      </div>
+    )
+  }, [])
 
   const [
     chartsRef,
@@ -290,6 +313,7 @@ function App () {
           {selectedStop && (
             <Marker icon={customMarker} position={selectedStop['stop_info']['coord']} />
           )}
+          {mapControls}
         </MapContainer>
       </div>
       <div className={styles.footer}>

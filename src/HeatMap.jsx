@@ -12,7 +12,6 @@ import {colorMapMain, colorMapAlt} from './colorMap'
 
 const tooltipStyles = {
   ...defaultTooltipStyles,
-  width: 20,
   fontSize: 16,
   textAlign: 'center',
   backgroundColor: 'rgba(0,0,0,0.9)',
@@ -125,6 +124,19 @@ const HeatMap = ({ width, height, data, ...rest }) => {
       .map((_, i) => i * binWidth * data["Montag"].length / 24 * 4)
   })
 
+  const tooltip = useMemo(() => {
+    if (!(tooltipOpen && tooltipData)) return null;
+    const chars = tooltipData.count.toString().length;
+
+    const offsetLeft = chars * 4 + 18;
+
+    return (
+      <TooltipInPortal top={tooltipTop - 40} left={tooltipLeft - offsetLeft} style={tooltipStyles}>
+        {tooltipData.count}
+      </TooltipInPortal>
+    )
+  }, [tooltipOpen, tooltipTop, tooltipLeft, tooltipData]);
+
   return width < 10 ? null : (
     <>
     <svg width={width} height={height} ref={containerRef} {...rest}>
@@ -220,11 +232,7 @@ const HeatMap = ({ width, height, data, ...rest }) => {
       </Group>
     </svg>
 
-    {tooltipOpen && tooltipData && (
-        <TooltipInPortal top={tooltipTop - 40} left={tooltipLeft - 28} style={tooltipStyles}>
-          {tooltipData.count}
-        </TooltipInPortal>
-      )}
+    {tooltip}
     </>
   )
 }
