@@ -118,6 +118,14 @@
       border-radius: 2px;
       outline: 2px solid rgba(0,0,0,0.2);
     }
+
+    :global(.leaflet-popup-content-wrapper) {
+      border-radius: 5px;
+      :global(.leaflet-popup-content) {
+        margin: 8px 14px;
+
+      }
+    }
   }
 }
 

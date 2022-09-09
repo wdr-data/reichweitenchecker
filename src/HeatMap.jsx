@@ -162,7 +162,7 @@ const HeatMap = ({ width, height, data, ...rest }) => {
         <defs>
           {WEEKDAYS.map((weekday, i) => (
             <clipPath key={`clip-${weekday}`} id={`clip-${i}`}>
-              <rect x={0} y={Math.round(i * binHeight + 5)} width={Math.round(xMax - 2)} height={Math.round(binHeight - 5)} rx={3} />
+              <rect x={-3} y={Math.round(i * binHeight + 5)} width={Math.round(xMax)} height={Math.round(binHeight - 5)} rx={3} />
             </clipPath>
           ))}
         </defs>

@@ -71,6 +71,13 @@ function encodeFileName(fileName) {
   )
 }
 
+
+const numberFormatter = new Intl.NumberFormat('de-DE')
+
+function format(number) {
+  return numberFormatter.format(number)
+}
+
 const startStopName = decodeURIComponent(window.location.hash.slice(1));
 
 function App () {
@@ -222,12 +229,12 @@ function App () {
   }, [selectedStop, chartsWidth])
 
   const heatmapExplanation = useMemo(() => selectedStop && (
-    <p>An einem Montag gibt es an dieser Station durchschnittlich{' '}
-      <b>{selectedStop.stats["heatmap"]["Montag"].reduce((a, b) => a + b, 0)}</b>{' '}
-      Abfahrten, an einem Samstag sind es{' '}
-      <b>{selectedStop.stats["heatmap"]["Samstag"].reduce((a, b) => a + b, 0)}</b>{' '}
+    <p>An einem Montag zwischen 6 und 20 Uhr gibt es an dieser Station durchschnittlich{' '}
+      <b>{format((selectedStop.stats["heatmap"]["Montag"].slice(7, 20).reduce((a, b) => a + b, 0) / 13).toFixed(1))}</b>{' '}
+      Abfahrten pro Stunde, an einem Samstag sind es{' '}
+      <b>{format((selectedStop.stats["heatmap"]["Samstag"].slice(7, 20).reduce((a, b) => a + b, 0) / 13).toFixed(1))}</b>{' '}
       und an einem Sonntag{' '}
-      <b>{selectedStop.stats["heatmap"]["Sonntag"].reduce((a, b) => a + b, 0)}</b>.
+      <b>{format((selectedStop.stats["heatmap"]["Sonntag"].slice(7, 20).reduce((a, b) => a + b, 0) / 13).toFixed(1))}</b>.
     </p>), [selectedStop]);
 
   const routeTypes = useMemo(() => {
@@ -262,7 +269,7 @@ function App () {
                 style={{ backgroundColor: colorMapRouteTypes[type] }}
               />
               <div className={styles.routeTypeLegendLabel}>
-                {type} ({percentage.toFixed(1)}%)
+                {type} ({format(percentage.toFixed(1))}%)
               </div>
             </div>
           ))}
