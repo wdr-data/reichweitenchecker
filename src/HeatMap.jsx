@@ -156,6 +156,17 @@ const HeatMap = ({ width, height, data, ...rest }) => {
         <Text x={xMax - 10} y={-5} fontSize={15} textAnchor="right">
           Summe
         </Text>
+
+        {/* Generate a clip paths for each row to round its corners */}
+        <defs>
+          {WEEKDAYS.map((weekday, i) => (
+            <clipPath key={`clip-${weekday}`} id={`clip-${i}`}>
+              <rect x={0} y={Math.round(i * binHeight + 5)} width={Math.round(xMax - 2)} height={Math.round(binHeight - 5)} rx={5} />
+            </clipPath>
+          ))}
+        </defs>
+
+
         <HeatmapRect
           data={binData}
           xScale={d => xScale(d) ?? 0}
@@ -170,6 +181,7 @@ const HeatMap = ({ width, height, data, ...rest }) => {
             heatmap.map(heatmapBins =>
               heatmapBins.map(bin => (
                 <rect
+                  clipPath={`url(#clip-${bin.row})`}
                   key={`heatmap-rect-${bin.row}-${bin.column}`}
                   className='visx-heatmap-rect'
                   width={Math.round(bin.width + 6)}
