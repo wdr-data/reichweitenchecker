@@ -41,7 +41,7 @@ function min (data, value) {
 const bins = d => d.bins
 const count = d => d.count
 
-const margin = { top: 15, left: 30, right: 40, bottom: 40 }
+const margin = { top: 0, left: 30, right: 5, bottom: 18 }
 
 let tooltipTimeout;
 
@@ -149,14 +149,6 @@ const HeatMap = ({ width, height, data, ...rest }) => {
           top={7}
           left={0}
         />
-        <AxisRight
-          scale={totalDepScale}
-          tickLabelProps={() => ({ fontSize: 15, textAnchor: 'start'})}
-          hideTicks={true}
-          hideAxisLine={true}
-          top={7}
-          left={xMax - 5}
-        />
         <AxisBottom
           scale={hourScale}
           tickLabelProps={() => ({ fontSize: 15, textAnchor: 'middle' })}
@@ -165,19 +157,15 @@ const HeatMap = ({ width, height, data, ...rest }) => {
           top={yMax - 5}
           left={-2.5}
         />
-        <Text x={xMax - 10} y={-5} fontSize={15} textAnchor="right">
-          Summe
-        </Text>
 
         {/* Generate a clip paths for each row to round its corners */}
         <defs>
           {WEEKDAYS.map((weekday, i) => (
             <clipPath key={`clip-${weekday}`} id={`clip-${i}`}>
-              <rect x={0} y={Math.round(i * binHeight + 5)} width={Math.round(xMax - 2)} height={Math.round(binHeight - 5)} rx={5} />
+              <rect x={0} y={Math.round(i * binHeight + 5)} width={Math.round(xMax - 2)} height={Math.round(binHeight - 5)} rx={3} />
             </clipPath>
           ))}
         </defs>
-
 
         <HeatmapRect
           data={binData}

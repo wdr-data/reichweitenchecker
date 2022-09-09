@@ -215,11 +215,20 @@ function App () {
       <HeatMap
         className={styles.heatmap}
         width={chartsWidth}
-        height={250}
+        height={190}
         data={selectedStop.stats['heatmap']}
       />
     )
   }, [selectedStop, chartsWidth])
+
+  const heatmapExplanation = useMemo(() => selectedStop && (
+    <p>An einem Montag gibt es an dieser Station durchschnittlich{' '}
+      <b>{selectedStop.stats["heatmap"]["Montag"].reduce((a, b) => a + b, 0)}</b>{' '}
+      Abfahrten, an einem Samstag sind es{' '}
+      <b>{selectedStop.stats["heatmap"]["Samstag"].reduce((a, b) => a + b, 0)}</b>{' '}
+      und an einem Sonntag{' '}
+      <b>{selectedStop.stats["heatmap"]["Sonntag"].reduce((a, b) => a + b, 0)}</b>.
+    </p>), [selectedStop]);
 
   const routeTypes = useMemo(() => {
     if (!selectedStop) return null
@@ -292,10 +301,16 @@ function App () {
             closeText="Schließen"
             openText="Öffnen"
           />
+          {selectedStop && (
           <div className={styles.charts} ref={chartsRef}>
-            {heatmap}
             {routeTypes}
+            <h3 className={styles.chartTitle}>
+              Abfahrten pro Stunde
+            </h3>
+            {heatmap}
+            {heatmapExplanation}
           </div>
+          )}
         </div>
         <MapContainer
           ref={setMap}
