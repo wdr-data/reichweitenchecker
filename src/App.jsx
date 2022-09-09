@@ -41,16 +41,16 @@ const WEEKDAYS = [
 ]
 
 const colorMapRouteTypes = {
-  "Bahn": "#006400",
-  "Bus": "#ffee00",
-  "Fernzug": "#b03060",
-  "Fähre": "#00ffff",
-  "Hochgeschwindigkeitszug": "#ff4500",
-  "Kabel-Straßenbahn": "#ff00ff",
-  "Regionalbahn": "#6495ed",
-  "S-Bahn": "#00ff00",
-  "Straßenbahn": "#deb887",
-  "U-Bahn": "#00008b",
+  "Kabel-Straßenbahn": "#a6cee3",
+  "Straßenbahn": "#1f78b4",
+  "S-Bahn": "#b2df8a",
+  "U-Bahn": "#33a02c",
+  "Bahn": "#fb9a99",
+  "Regionalbahn": "#e31a1c",
+  "Fernzug": "#fdbf6f",
+  "Hochgeschwindigkeitszug": "#ff7f00",
+  "Fähre": "#cab2d6",
+  "Bus": "#6a3d9a",
 }
 
 function fixedEncodeURIComponent(str) {
