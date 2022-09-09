@@ -40,6 +40,19 @@ const WEEKDAYS = [
   'Sonntag'
 ]
 
+const colorMapRouteTypes = {
+  "Bahn": "#006400",
+  "Bus": "#ffee00",
+  "Fernzug": "#b03060",
+  "Fähre": "#00ffff",
+  "Hochgeschwindigkeitszug": "#ff4500",
+  "Kabel-Straßenbahn": "#ff00ff",
+  "Regionalbahn": "#6495ed",
+  "S-Bahn": "#00ff00",
+  "Straßenbahn": "#deb887",
+  "U-Bahn": "#00008b",
+}
+
 function fixedEncodeURIComponent(str) {
   return encodeURIComponent(str).replace(
     /[!'()*]/g,
@@ -175,6 +188,47 @@ function App () {
     )
   }, [selectedStop, chartsWidth])
 
+  const routeTypes = useMemo(() => {
+    if (!selectedStop) return null
+
+    const routeTypes = selectedStop.stats['vehicle_types']  // TODO: rename to route_types
+    const total = Object.values(routeTypes).reduce((a, b) => a + b, 0)
+    const routeTypePercentages = Object.entries(routeTypes).map(([key, value]) => ({
+      type: key,
+      percentage: value / total * 100,
+    })).sort((a, b) => b.percentage - a.percentage)
+
+    return (
+      <div className={styles.routeTypes}>
+        <div className={styles.routeTypesBar}>
+          {routeTypePercentages.map(({ type, percentage }) => (
+            <div
+              key={type}
+              className={styles.routeType}
+              style={{
+                width: `${percentage}%`,
+                backgroundColor: colorMapRouteTypes[type],
+              }}
+            />
+          ))}
+        </div>
+        <div className={styles.routeTypesLegend}>
+          {routeTypePercentages.map(({ type, percentage }) => (
+            <div key={type} className={styles.routeTypesLegendItem}>
+              <div
+                className={styles.routeTypeLegendColor}
+                style={{ backgroundColor: colorMapRouteTypes[type] }}
+              />
+              <div className={styles.routeTypeLegendLabel}>
+                {type} ({percentage.toFixed(1)}%)
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }, [selectedStop]);
+
   return (
     <div className={styles.app}>
       <div className={styles.header}>
@@ -206,6 +260,7 @@ function App () {
           />
           <div className={styles.charts} ref={chartsRef}>
             {heatmap}
+            {routeTypes}
           </div>
         </div>
         <MapContainer
