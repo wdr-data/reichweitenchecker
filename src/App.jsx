@@ -191,7 +191,7 @@ function App () {
           <Popup>
             <b>{destination['name']}</b>
             <br />
-            Erreichbar in {destination['time'] / 60} min
+            Erreichbar in {format((destination['time'] / 60).toFixed(1))} min
             <br />
             Erfordert {destination['trans']} mal Umsteigen
           </Popup>
