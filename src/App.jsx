@@ -91,10 +91,18 @@ function App () {
   useEffect(() => {
     async function fetchTravelStops () {
       const response = await fetch(
-        `${process.env.REACT_APP_DATA_URL}/travel_stops.json`
+        `${process.env.REACT_APP_DATA_URL}/stops.json`
       )
       const data = await response.json()
-      setTravelStops(data)
+
+      const dataPrepped = data.map(stop => ({
+        label: stop[0],
+        searchValue: stop[0].startsWith(stop[1])
+          ? stop[0]
+          : `${stop[1]} ${stop[0]}`
+      }))
+
+      setTravelStops(dataPrepped)
     }
     fetchTravelStops()
   }, [])
@@ -116,6 +124,7 @@ function App () {
       if (!stop) {
         return
       }
+      stop = stop.label
       const stopURLEncoded = encodeFileName(stop)
       const [responseTravelTimes, responseStopStats] = await Promise.all([
         fetch(
@@ -160,7 +169,9 @@ function App () {
   useEffect(() => {
     if (!travelStops || !map) return
     if (window.location.hash) {
-      handleStopChange(null, decodeURIComponent(window.location.hash.slice(1)))
+      handleStopChange(null, {
+        label: decodeURIComponent(window.location.hash.slice(1))
+      })
     }
   }, [travelStops, handleStopChange, map])
 

@@ -164,7 +164,7 @@ export default function VirtualizedAutocomplete ({
     if (searchQuery === '') {
       return options
     }
-    return matchSorter(options, searchQuery)
+    return matchSorter(options, searchQuery, { keys: ['searchValue'] })
   }, [options, searchQuery, debouncing])
 
   // We don't need Autocomplete to do any filtering or checking since we do it ourselves
@@ -187,7 +187,7 @@ export default function VirtualizedAutocomplete ({
       PopperComponent={StyledPopper}
       ListboxComponent={ListboxComponent}
       renderInput={renderInputMemo}
-      renderOption={(props, option) => [props, option]}
+      renderOption={(props, option) => [props, option.label]}
       renderGroup={params => params}
       loading={debouncing || loading}
       options={filteredOptions}
