@@ -309,6 +309,30 @@ function App () {
     { width: chartsWidth, height: chartsHeight }
   ] = useElementSize()
 
+  // Day selector
+  const daySelector = useMemo(
+    () =>
+      selectedStop && (
+        <ButtonGroup
+          disableElevation
+          variant='contained'
+          size='small'
+          className={styles.dayButtonGroup}
+        >
+          {DAYS_LESS.map(day_ => (
+            <Button
+              key={day_}
+              color={day === day_ ? 'secondary' : 'primary'}
+              onClick={() => setDay(day_)}
+            >
+              {day_}
+            </Button>
+          ))}
+        </ButtonGroup>
+      ),
+    [day, selectedStop]
+  )
+
   // Build heatmap
   const heatmap = useMemo(() => {
     if (!selectedStop) return null
@@ -441,22 +465,7 @@ function App () {
           {searchField}
           {selectedStop && (
             <div className={styles.charts} ref={chartsRef}>
-              <ButtonGroup
-                disableElevation
-                variant='contained'
-                size='small'
-                className={styles.dayButtonGroup}
-              >
-                {DAYS_LESS.map(day_ => (
-                  <Button
-                    key={day_}
-                    color={day === day_ ? 'secondary' : 'primary'}
-                    onClick={() => setDay(day_)}
-                  >
-                    {day_}
-                  </Button>
-                ))}
-              </ButtonGroup>
+              {daySelector}
               <h2 className={styles.stopName}>
                 {selectedStop.stats['stop_name']}
               </h2>
@@ -471,27 +480,36 @@ function App () {
             </div>
           )}
         </div>
-        <MapContainer
-          ref={setMap}
-          className={styles.mapContainer}
-          scrollWheelZoom={true}
-          touchZoom={true}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-          />
 
-          {circleMarkers}
+        <div className={styles.mapWrapper}>
+          <h3 className={styles.mapTitle}>
+            <b>Karte:</b> Welche Haltestellen sind in einer Stunde erreichbar?
+          </h3>
+          {daySelector}
 
-          {selectedStop && (
-            <Marker
-              icon={customMarker}
-              position={selectedStop.travelTimes[day]['stop_info']['coord']}
+          <MapContainer
+            ref={setMap}
+            className={styles.mapContainer}
+            scrollWheelZoom={true}
+            touchZoom={true}
+          >
+            {mapControls}
+
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
             />
-          )}
-          {mapControls}
-        </MapContainer>
+
+            {circleMarkers}
+
+            {selectedStop && (
+              <Marker
+                icon={customMarker}
+                position={selectedStop.travelTimes[day]['stop_info']['coord']}
+              />
+            )}
+          </MapContainer>
+        </div>
       </div>
       <div className={styles.footer}>
         <span>&copy; WDR 2022</span>&nbsp;|&nbsp;

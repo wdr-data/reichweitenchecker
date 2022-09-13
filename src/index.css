@@ -3,7 +3,7 @@
 }
 
 html {
-  height: 100vh;
+  min-height: 100vh;
 }
 
 body {
@@ -13,7 +13,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   padding: 0;
 
   --brand-primary: #00345f;
@@ -26,11 +26,21 @@ body {
 }
 
 #map-widget {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  margin: 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
   background-color: white;
+}
+
+@media screen and (max-width: 768px) {
+  #map-widget {
+    height: unset;
+    min-height: 100vh;
+  }
 }
 
 code {
