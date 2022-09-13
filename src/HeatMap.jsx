@@ -2,13 +2,12 @@ import React from 'react'
 import { Group } from '@visx/group'
 import { scaleLinear, scaleOrdinal } from '@visx/scale'
 import { HeatmapRect } from '@visx/heatmap'
-import { AxisLeft, AxisBottom, AxisRight } from '@visx/axis'
+import { AxisLeft, AxisBottom } from '@visx/axis'
 import {
   useTooltip,
   useTooltipInPortal,
   defaultStyles as defaultTooltipStyles
 } from '@visx/tooltip'
-import { Text } from '@visx/text'
 import { localPoint } from '@visx/event'
 import { useMemo } from 'react'
 
@@ -120,13 +119,13 @@ const HeatMap = ({ width, height, data, ...rest }) => {
   //   (weekday, i) =>
   //     [0, ...data[weekday]].reduce((a, b) => a + b).toString() + ' '.repeat(i)
   // )
-  const totalDepScale = scaleOrdinal({
-    domain: WEEKDAYS.map(
-      (weekday, i) =>
-        [0, ...data[weekday]].reduce((a, b) => a + b).toString() + ' '.repeat(i)
-    ),
-    range: WEEKDAYS.map((_, i) => i * binHeight + binHeight / 2)
-  })
+  // const totalDepScale = scaleOrdinal({
+  //   domain: WEEKDAYS.map(
+  //     (weekday, i) =>
+  //       [0, ...data[weekday]].reduce((a, b) => a + b).toString() + ' '.repeat(i)
+  //   ),
+  //   range: WEEKDAYS.map((_, i) => i * binHeight + binHeight / 2)
+  // })
   const hourScale = scaleOrdinal({
     domain: [0, 1, 2, 3, 4, 5, 6].map(hour => `${hour * 4}`),
     range: Array(7)

@@ -43,11 +43,27 @@
     .charts {
       position: relative;
 
+      .dayButtonGroup {
+        margin-bottom: 1rem;
+        width: 100%;
+        button {
+          flex-grow: 1;
+        }
+      }
+
       .stopName {
         margin-top: 0;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.1rem;
         font-size: 1.25rem;
         font-weight: 700;
+      }
+
+      .municipality {
+        color: rgba(0, 0, 0, 0.8);
+        margin-top: 0;
+        font-size: 1rem;
+        margin-top: 0;
+        margin-bottom: 0.25rem;
       }
 
       .chartTitle {
@@ -64,20 +80,38 @@
       .heatmap {
       }
 
-      .routeTypes {
-        .routeTypesBar {
-          border-radius: 3px;
-          overflow: hidden;
+      .distributionBar {
+        border-radius: 3px;
+        overflow: hidden;
+        height: 20px;
+        width: 100%;
+        position: relative;
+        .distribution {
           height: 20px;
-          width: 100%;
-          position: relative;
-          .routeType {
-            height: 20px;
-            width: 20px;
-            display: inline-block;
-            margin: 0;
-          }
+          width: 20px;
+          display: inline-block;
+          margin: 0;
         }
+      }
+
+      .ranksLegend {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-top: 0.25rem;
+        font-size: 0.8rem;
+        span {
+          display: block;
+        }
+        .ranksLegendWorse {
+          color: #444;
+        }
+        .ranksLegendBetter {
+          color: #3a4;
+        }
+      }
+
+      .routeTypes {
         .routeTypesLegend {
           display: flex;
           flex-direction: row;
@@ -121,6 +155,9 @@
       background-color: white;
       border-radius: 2px;
       outline: 2px solid rgba(0, 0, 0, 0.2);
+
+      font-size: 1rem;
+      font-family: 'Thesis', sans-serif;
     }
 
     :global(.leaflet-popup-content-wrapper) {

@@ -11,9 +11,10 @@ import {
 import { Icon, Point } from 'leaflet'
 import { useElementSize } from 'usehooks-ts'
 import clsx from 'clsx'
-import Typography from '@mui/material/Typography'
 import Switch from '@mui/material/Switch'
 import Stack from '@mui/material/Stack'
+import Button from '@mui/material/Button'
+import ButtonGroup from '@mui/material/ButtonGroup'
 
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
@@ -42,6 +43,8 @@ const WEEKDAYS = [
   'Samstag',
   'Sonntag'
 ]
+
+const DAYS_LESS = ['Werktag', 'Samstag', 'Sonntag']
 
 const colorMapRouteTypes = {
   'Kabel-Straßenbahn': '#fb9a99',
@@ -87,6 +90,13 @@ function App () {
   const [map, setMap] = useState(null)
   const [selectedStop, setSelectedStop] = useState(null)
 
+  const [day, setDay] = useState('Werktag')
+  const dayRef = React.useRef(day)
+
+  useEffect(() => {
+    dayRef.current = day
+  }, [day])
+
   // Load travel stops on page load
   useEffect(() => {
     async function fetchTravelStops () {
@@ -119,51 +129,89 @@ function App () {
   }, [map])
 
   // Load stop data on selection
-  const handleStopChange = useCallback(
-    async (event, stop) => {
-      if (!stop) {
-        return
-      }
-      stop = stop.label
-      const stopURLEncoded = encodeFileName(stop)
-      const [responseTravelTimes, responseStopStats] = await Promise.all([
-        fetch(
-          `${process.env.REACT_APP_DATA_URL}/travel_times_proc/${stopURLEncoded}.json`
-        ),
-        fetch(
-          `${process.env.REACT_APP_DATA_URL}/stop_stats/${stopURLEncoded}.json`
+  const handleStopChange = useCallback(async (event, stop) => {
+    if (!stop) {
+      return
+    }
+    stop = stop.label
+    const stopURLEncoded = encodeFileName(stop)
+    const [
+      responseTravelTimesMonday,
+      responseTravelTimesSaturday,
+      responseTravelTimesSunday,
+      responseStopStats
+    ] = await Promise.all([
+      fetch(
+        `${process.env.REACT_APP_DATA_URL}/travel_times_proc_monday/${stopURLEncoded}.json`
+      ),
+      fetch(
+        `${process.env.REACT_APP_DATA_URL}/travel_times_proc_saturday/${stopURLEncoded}.json`
+      ),
+      fetch(
+        `${process.env.REACT_APP_DATA_URL}/travel_times_proc_sunday/${stopURLEncoded}.json`
+      ),
+      fetch(
+        `${process.env.REACT_APP_DATA_URL}/stop_stats/${stopURLEncoded}.json`
+      )
+    ])
+
+    const [
+      travelTimesMonday,
+      travelTimesSaturday,
+      travelTimesSunday,
+      stopStats
+    ] = await Promise.all([
+      responseTravelTimesMonday.json(),
+      responseTravelTimesSaturday.json(),
+      responseTravelTimesSunday.json(),
+      responseStopStats.json()
+    ])
+
+    // Closest last, so markers are on top
+    travelTimesMonday['destinations'].reverse()
+    travelTimesSaturday['destinations'].reverse()
+    travelTimesSunday['destinations'].reverse()
+
+    const stopData = {
+      travelTimes: {
+        Werktag: travelTimesMonday,
+        Samstag: travelTimesSaturday,
+        Sonntag: travelTimesSunday
+      },
+      stats: stopStats
+    }
+
+    setSelectedStop(stopData)
+    window.location.hash = fixedEncodeURIComponent(stop)
+  }, [])
+
+  // Set map location & zoom on stop selection
+  useEffect(() => {
+    if (!(selectedStop && map)) return
+
+    const currentlySelectedDay = dayRef.current
+    const destinations =
+      selectedStop.travelTimes[currentlySelectedDay].destinations
+
+    const destLat = destinations.map(c => c['coord'][0])
+    const destLng = destinations.map(c => c['coord'][1])
+    const handle = window.setTimeout(() => {
+      console.log('current day', currentlySelectedDay)
+      map.invalidateSize()
+      if (destLat.length > 0 && destLng.length > 0) {
+        map.fitBounds([
+          [Math.min(...destLat), Math.min(...destLng)],
+          [Math.max(...destLat), Math.max(...destLng)]
+        ])
+      } else {
+        map.setView(
+          selectedStop.travelTimes[currentlySelectedDay]['stop_info']['coord'],
+          13
         )
-      ])
-
-      const [travelTimes, stopStats] = await Promise.all([
-        responseTravelTimes.json(),
-        responseStopStats.json()
-      ])
-
-      const stopData = {
-        ...travelTimes,
-        stats: stopStats
       }
-      stopData['destinations'].reverse() // Closest last, so markers are on top
-
-      const destLat = stopData['destinations'].map(c => c['coord'][0])
-      const destLng = stopData['destinations'].map(c => c['coord'][1])
-      window.setTimeout(() => {
-        map.invalidateSize()
-        if (destLat.length > 0 && destLng.length > 0) {
-          map.fitBounds([
-            [Math.min(...destLat), Math.min(...destLng)],
-            [Math.max(...destLat), Math.max(...destLng)]
-          ])
-        } else {
-          map.setView(stopData['stop_info']['coord'], 13)
-        }
-      }, 100)
-      setSelectedStop(stopData)
-      window.location.hash = fixedEncodeURIComponent(stop)
-    },
-    [map]
-  )
+    }, 100)
+    return () => window.clearTimeout(handle)
+  }, [map, selectedStop])
 
   // Load stop from URL location hash
   useEffect(() => {
@@ -183,13 +231,13 @@ function App () {
       return []
     }
 
-    return selectedStop['destinations'].map(destination => {
+    return selectedStop.travelTimes[day]['destinations'].map(destination => {
       if (!mapShowTransfers && destination['trans'] > 0) {
         return null
       }
       return (
         <CircleMarker
-          key={`${destination['id']}_${destination['time']}_${mapShowTransfers}`}
+          key={`${destination['id']}_${destination['time']}_${day}_${mapShowTransfers}`}
           center={destination['coord']}
           pathOptions={{
             color: '#000',
@@ -209,31 +257,59 @@ function App () {
         </CircleMarker>
       )
     })
-  }, [selectedStop, mapShowTransfers])
+  }, [selectedStop, mapShowTransfers, day])
 
+  // Build custom map controls
   const mapControls = useMemo(() => {
     return (
       <div className={styles.customMapControls}>
         <div className={styles.customMapControl}>
           <Stack direction='row' spacing={0} alignItems='center'>
-            <Typography>Ohne Umsteigen</Typography>
+            <span>Ohne Umsteigen</span>
             <Switch
               defaultChecked
               onChange={(ev, checked) => setMapShowTransfers(checked)}
               inputProps={{ 'aria-label': 'Mit Umsteigen' }}
             />
-            <Typography>Mit Umsteigen</Typography>
+            <span>Mit Umsteigen</span>
           </Stack>
         </div>
       </div>
     )
   }, [])
 
+  // Build search field
+  const searchField = useMemo(
+    () => (
+      <VirtualizedAutocomplete
+        className={clsx(
+          styles.searchField,
+          !selectedStop && styles.searchFieldInitial
+        )}
+        defaultValue={startStopName}
+        options={travelStops}
+        onChange={handleStopChange}
+        blurOnSelect={true}
+        loading={!travelStops}
+        label='Haltestelle suchen'
+        loadingText='Wird geladen...'
+        noOptionsText='Keine Ergebnisse'
+        clearText='Leeren'
+        closeText='Schließen'
+        openText='Öffnen'
+        size='small'
+      />
+    ),
+    [travelStops, handleStopChange, selectedStop]
+  )
+
+  // Observe size of charts container
   const [
     chartsRef,
     { width: chartsWidth, height: chartsHeight }
   ] = useElementSize()
 
+  // Build heatmap
   const heatmap = useMemo(() => {
     if (!selectedStop) return null
     return (
@@ -246,55 +322,70 @@ function App () {
     )
   }, [selectedStop, chartsWidth])
 
-  const heatmapExplanation = useMemo(
+  // Build ranking text & distribution bar
+  const ranking = useMemo(
     () =>
       selectedStop && (
-        <p>
-          An einem Wochentag zwischen 6 und 20 Uhr gibt es an dieser Station
-          durchschnittlich{' '}
-          <b>
-            {format(
-              (
-                WEEKDAYS.slice(0, 5)
-                  .map(day => selectedStop.stats['heatmap'][day])
-                  .map(
-                    weekdayData =>
-                      weekdayData.slice(5, 20).reduce((a, b) => a + b, 0) / 15
-                  )
-                  .reduce((a, b) => a + b, 0) / 5
-              ).toFixed(1)
-            )}
-          </b>{' '}
-          Abfahrten pro Stunde, an einem Samstag sind es{' '}
-          <b>
-            {format(
-              (
-                selectedStop.stats['heatmap']['Samstag']
-                  .slice(5, 20)
-                  .reduce((a, b) => a + b, 0) / 15
-              ).toFixed(1)
-            )}
-          </b>{' '}
-          und an einem Sonntag{' '}
-          <b>
-            {format(
-              (
-                selectedStop.stats['heatmap']['Sonntag']
-                  .slice(5, 20)
-                  .reduce((a, b) => a + b, 0) / 15
-              ).toFixed(1)
-            )}
-          </b>
-          .
-        </p>
+        <>
+          <p>
+            An einem {day} zwischen 6 und 20 Uhr gibt es an dieser Station
+            durchschnittlich{' '}
+            <b>
+              {format(
+                selectedStop.stats['rank_data'][day][
+                  'dep_per_hour_avg'
+                ].toFixed(1)
+              )}
+            </b>{' '}
+            Abfahrten pro Stunde. An{' '}
+            <b>
+              {format(
+                (
+                  selectedStop.stats['rank_data'][day]['dep_per_day_better'] *
+                  100
+                ).toFixed(1)
+              )}
+            </b>
+            % aller Haltestellen in NRW gibt es mehr.
+          </p>
+
+          <div className={styles.distributionBar}>
+            <div
+              className={styles.distribution}
+              style={{
+                width: `${selectedStop.stats['rank_data'][day][
+                  'dep_per_day_worse'
+                ] * 100}%`,
+                backgroundColor: '#444'
+              }}
+            />
+            <div
+              className={styles.distribution}
+              style={{
+                width: `${selectedStop.stats['rank_data'][day][
+                  'dep_per_day_better'
+                ] * 100}%`,
+                backgroundColor: '#3a4'
+              }}
+            />
+          </div>
+
+          <div className={styles.ranksLegend}>
+            <span className={styles.ranksLegendWorse}>
+              gleich viel/weniger Fahrten
+            </span>
+            <span className={styles.ranksLegendBetter}>mehr Fahrten</span>
+          </div>
+        </>
       ),
-    [selectedStop]
+    [selectedStop, day]
   )
 
+  // Build route types distribution bar
   const routeTypes = useMemo(() => {
     if (!selectedStop) return null
 
-    const routeTypes = selectedStop.stats['vehicle_types'] // TODO: rename to route_types
+    const routeTypes = selectedStop.stats['route_types']
     const total = Object.values(routeTypes).reduce((a, b) => a + b, 0)
     const routeTypePercentages = Object.entries(routeTypes)
       .map(([key, value]) => ({
@@ -305,11 +396,11 @@ function App () {
 
     return (
       <div className={styles.routeTypes}>
-        <div className={styles.routeTypesBar}>
+        <div className={styles.distributionBar}>
           {routeTypePercentages.map(({ type, percentage }) => (
             <div
               key={type}
-              className={styles.routeType}
+              className={styles.distribution}
               style={{
                 width: `${percentage}%`,
                 backgroundColor: colorMapRouteTypes[type]
@@ -347,30 +438,32 @@ function App () {
       </div>
       <div className={styles.content}>
         <div className={styles.stopInfo}>
-          <VirtualizedAutocomplete
-            className={clsx(
-              styles.searchField,
-              !selectedStop && styles.searchFieldInitial
-            )}
-            defaultValue={startStopName}
-            options={travelStops}
-            onChange={handleStopChange}
-            blurOnSelect={true}
-            loading={!travelStops}
-            label='Haltestelle suchen'
-            loadingText='Wird geladen...'
-            noOptionsText='Keine Ergebnisse'
-            clearText='Leeren'
-            closeText='Schließen'
-            openText='Öffnen'
-            size='small'
-          />
+          {searchField}
           {selectedStop && (
             <div className={styles.charts} ref={chartsRef}>
+              <ButtonGroup
+                disableElevation
+                variant='contained'
+                size='small'
+                className={styles.dayButtonGroup}
+              >
+                {DAYS_LESS.map(day_ => (
+                  <Button
+                    key={day_}
+                    color={day === day_ ? 'secondary' : 'primary'}
+                    onClick={() => setDay(day_)}
+                  >
+                    {day_}
+                  </Button>
+                ))}
+              </ButtonGroup>
               <h2 className={styles.stopName}>
                 {selectedStop.stats['stop_name']}
               </h2>
-              {heatmapExplanation}
+              <span className={styles.municipality}>
+                {selectedStop.stats['municipality']}
+              </span>
+              {ranking}
               <h3 className={styles.chartTitle}>Abfahrten pro Stunde</h3>
               {heatmap}
               <h3 className={styles.chartTitle}>Verkehrsmittel</h3>
@@ -394,7 +487,7 @@ function App () {
           {selectedStop && (
             <Marker
               icon={customMarker}
-              position={selectedStop['stop_info']['coord']}
+              position={selectedStop.travelTimes[day]['stop_info']['coord']}
             />
           )}
           {mapControls}
