@@ -203,7 +203,7 @@ const HeatMap = ({ width, height, data, ...rest }) => {
                     clipPath={`url(#clip-${bin.row})`}
                     key={`heatmap-rect-${bin.row}-${bin.column}`}
                     className='visx-heatmap-rect'
-                    width={Math.round(bin.width + 6)}
+                    width={Math.round(bin.width + 7)}
                     height={Math.round(bin.height)}
                     x={Math.round(bin.x - 3)}
                     y={Math.round(bin.y)}
