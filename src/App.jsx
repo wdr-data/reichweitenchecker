@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useEffect, useMemo, useReducer } from 'react'
 
 import {
   MapContainer,
@@ -9,12 +9,12 @@ import {
   Popup
 } from 'react-leaflet'
 import { Icon, Point } from 'leaflet'
-import { useElementSize } from 'usehooks-ts'
 import clsx from 'clsx'
 import Switch from '@mui/material/Switch'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
+import Skeleton from '@mui/material/Skeleton'
 
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
@@ -85,10 +85,131 @@ function format (number) {
 
 const startStopName = decodeURIComponent(window.location.hash.slice(1))
 
+const skeleton = (
+  <div className={styles.skeleton}>
+    <Skeleton variant='rounded' height={30} sx={{ marginTop: '1rem' }} />
+    <Skeleton width='60%' sx={{ fontSize: '2rem', marginTop: '1rem' }} />
+    <Skeleton width='30%' />
+    <Skeleton width='90%' sx={{ marginTop: '1rem' }} />
+    <Skeleton width='95%' />
+    <Skeleton width='85%' />
+    <Skeleton width='88%' />
+    <Skeleton width='60%' />
+    <br />
+    <Skeleton variant='rounded' height={20} />
+    <br />
+    <Skeleton width='65%' sx={{ fontSize: '2rem' }} />
+    <Skeleton
+      width='90%'
+      variant='rounded'
+      height={20}
+      sx={{ marginBottom: '5px', marginLeft: '10%' }}
+    />
+    <Skeleton
+      width='90%'
+      variant='rounded'
+      height={20}
+      sx={{ marginBottom: '5px', marginLeft: '10%' }}
+    />
+    <Skeleton
+      width='90%'
+      variant='rounded'
+      height={20}
+      sx={{ marginBottom: '5px', marginLeft: '10%' }}
+    />
+    <Skeleton
+      width='90%'
+      variant='rounded'
+      height={20}
+      sx={{ marginBottom: '5px', marginLeft: '10%' }}
+    />
+    <Skeleton
+      width='90%'
+      variant='rounded'
+      height={20}
+      sx={{ marginBottom: '5px', marginLeft: '10%' }}
+    />
+    <Skeleton
+      width='90%'
+      variant='rounded'
+      height={20}
+      sx={{ marginBottom: '5px', marginLeft: '10%' }}
+    />
+    <Skeleton
+      width='90%'
+      variant='rounded'
+      height={20}
+      sx={{ marginBottom: '5px', marginLeft: '10%' }}
+    />
+    <Skeleton width='45%' sx={{ fontSize: '2rem', marginTop: '1.75rem' }} />
+    <Skeleton variant='rounded' height={20} />
+    <Skeleton
+      width='30%'
+      sx={{ display: 'inline-block', marginRight: '.8rem' }}
+    />
+    <Skeleton
+      width='60%'
+      sx={{ display: 'inline-block', marginRight: '.8rem' }}
+    />
+    <Skeleton
+      width='40%'
+      sx={{ display: 'inline-block', marginRight: '.8rem' }}
+    />
+  </div>
+)
+
+const ACTION_TYPES = {
+  FETCH_START: 'FETCH_START',
+  FETCH_SUCCESS: 'FETCH_SUCCESS',
+  FETCH_ERROR: 'FETCH_ERROR'
+}
+
+export const stopReducer = (state, action) => {
+  switch (action.type) {
+    case ACTION_TYPES.FETCH_START:
+      return {
+        loading: true,
+        error: false,
+        stop: {},
+        stopName: action.stopName,
+        available: false
+      }
+    case ACTION_TYPES.FETCH_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: false,
+        stop: action.stop,
+        available: true
+      }
+    case ACTION_TYPES.FETCH_ERROR:
+      return {
+        error: true,
+        loading: false,
+        stop: {},
+        available: false
+      }
+    default:
+      return state
+  }
+}
+
 function App () {
   const [travelStops, setTravelStops] = useState([])
   const [map, setMap] = useState(null)
-  const [selectedStop, setSelectedStop] = useState(null)
+
+  const [selectedStop, selectedStopDispatch] = useReducer(stopReducer, {
+    loading: false,
+    stopName: '',
+    stop: {},
+    error: false,
+    available: false
+  })
+  const selectedStopRef = React.useRef(null)
+
+  useEffect(() => {
+    selectedStopRef.current = selectedStop
+  }, [selectedStop])
 
   const [day, setDay] = useState('Werktag')
   const dayRef = React.useRef(day)
@@ -130,9 +251,14 @@ function App () {
 
   // Load stop data on selection
   const handleStopChange = useCallback(async (event, stop) => {
-    if (!stop) {
+    if (!stop || stop.label === selectedStopRef.current?.stopName) {
       return
     }
+    selectedStopDispatch({
+      type: ACTION_TYPES.FETCH_START,
+      stopName: stop.label
+    })
+
     stop = stop.label
     const stopURLEncoded = encodeFileName(stop)
     const [
@@ -181,17 +307,17 @@ function App () {
       stats: stopStats
     }
 
-    setSelectedStop(stopData)
+    selectedStopDispatch({ type: ACTION_TYPES.FETCH_SUCCESS, stop: stopData })
     window.location.hash = fixedEncodeURIComponent(stop)
   }, [])
 
   // Set map location & zoom on stop selection
   useEffect(() => {
-    if (!(selectedStop && map)) return
+    if (!(selectedStop.available && map)) return
 
     const currentlySelectedDay = dayRef.current
     const destinations =
-      selectedStop.travelTimes[currentlySelectedDay].destinations
+      selectedStop.stop.travelTimes[currentlySelectedDay].destinations
 
     const destLat = destinations.map(c => c['coord'][0])
     const destLng = destinations.map(c => c['coord'][1])
@@ -205,7 +331,9 @@ function App () {
         ])
       } else {
         map.setView(
-          selectedStop.travelTimes[currentlySelectedDay]['stop_info']['coord'],
+          selectedStop.stop.travelTimes[currentlySelectedDay]['stop_info'][
+            'coord'
+          ],
           13
         )
       }
@@ -227,36 +355,38 @@ function App () {
 
   // Build circle markers for each destination
   const circleMarkers = useMemo(() => {
-    if (!selectedStop) {
+    if (!selectedStop.available) {
       return []
     }
 
-    return selectedStop.travelTimes[day]['destinations'].map(destination => {
-      if (!mapShowTransfers && destination['trans'] > 0) {
-        return null
+    return selectedStop.stop.travelTimes[day]['destinations'].map(
+      destination => {
+        if (!mapShowTransfers && destination['trans'] > 0) {
+          return null
+        }
+        return (
+          <CircleMarker
+            key={`${destination['id']}_${destination['time']}_${day}_${mapShowTransfers}`}
+            center={destination['coord']}
+            pathOptions={{
+              color: '#000',
+              fillColor: colorMapMain(destination['time'] / 3600),
+              //fillColor: colorMapMain(Math.min(destination['trans'], 3) / 3),
+              weight: 0.2, // 1.5,
+              fillOpacity: 0.9
+            }}
+          >
+            <Popup>
+              <b>{destination['name']}</b>
+              <br />
+              Erreichbar in {format((destination['time'] / 60).toFixed(1))} min
+              <br />
+              Erfordert {destination['trans']} mal Umsteigen
+            </Popup>
+          </CircleMarker>
+        )
       }
-      return (
-        <CircleMarker
-          key={`${destination['id']}_${destination['time']}_${day}_${mapShowTransfers}`}
-          center={destination['coord']}
-          pathOptions={{
-            color: '#000',
-            fillColor: colorMapMain(destination['time'] / 3600),
-            //fillColor: colorMapMain(Math.min(destination['trans'], 3) / 3),
-            weight: 0.2, // 1.5,
-            fillOpacity: 0.9
-          }}
-        >
-          <Popup>
-            <b>{destination['name']}</b>
-            <br />
-            Erreichbar in {format((destination['time'] / 60).toFixed(1))} min
-            <br />
-            Erfordert {destination['trans']} mal Umsteigen
-          </Popup>
-        </CircleMarker>
-      )
-    })
+    )
   }, [selectedStop, mapShowTransfers, day])
 
   // Build custom map controls
@@ -284,13 +414,13 @@ function App () {
       <VirtualizedAutocomplete
         className={clsx(
           styles.searchField,
-          !selectedStop && styles.searchFieldInitial
+          !selectedStop.available && styles.searchFieldInitial
         )}
         defaultValue={startStopName}
         options={travelStops}
         onChange={handleStopChange}
         blurOnSelect={true}
-        loading={!travelStops}
+        loading={!travelStops.length}
         label='Haltestelle suchen'
         loadingText='Wird geladen...'
         noOptionsText='Keine Ergebnisse'
@@ -303,16 +433,10 @@ function App () {
     [travelStops, handleStopChange, selectedStop]
   )
 
-  // Observe size of charts container
-  const [
-    chartsRef,
-    { width: chartsWidth, height: chartsHeight }
-  ] = useElementSize()
-
   // Day selector
   const daySelector = useMemo(
     () =>
-      selectedStop && (
+      selectedStop.available && (
         <ButtonGroup
           disableElevation
           variant='contained'
@@ -335,26 +459,26 @@ function App () {
 
   // Build heatmap
   const heatmap = useMemo(() => {
-    if (!selectedStop) return null
+    if (!selectedStop.available) return null
     return (
       <HeatMap
         className={styles.heatmap}
-        data={selectedStop.stats['heatmap']}
+        data={selectedStop.stop.stats['heatmap']}
       />
     )
-  }, [selectedStop, chartsWidth])
+  }, [selectedStop])
 
   // Build ranking text & distribution bar
   const ranking = useMemo(
     () =>
-      selectedStop && (
+      selectedStop.available && (
         <>
           <p>
             An einem {day} zwischen 6 und 20 Uhr gibt es an dieser Station
             durchschnittlich{' '}
             <b>
               {format(
-                selectedStop.stats['rank_data'][day][
+                selectedStop.stop.stats['rank_data'][day][
                   'dep_per_hour_avg'
                 ].toFixed(1)
               )}
@@ -363,8 +487,9 @@ function App () {
             <b>
               {format(
                 (
-                  selectedStop.stats['rank_data'][day]['dep_per_day_better'] *
-                  100
+                  selectedStop.stop.stats['rank_data'][day][
+                    'dep_per_day_better'
+                  ] * 100
                 ).toFixed(1)
               )}
             </b>
@@ -375,7 +500,7 @@ function App () {
             <div
               className={styles.distribution}
               style={{
-                width: `${selectedStop.stats['rank_data'][day][
+                width: `${selectedStop.stop.stats['rank_data'][day][
                   'dep_per_day_worse'
                 ] * 100}%`,
                 backgroundColor: '#444'
@@ -384,7 +509,7 @@ function App () {
             <div
               className={styles.distribution}
               style={{
-                width: `${selectedStop.stats['rank_data'][day][
+                width: `${selectedStop.stop.stats['rank_data'][day][
                   'dep_per_day_better'
                 ] * 100}%`,
                 backgroundColor: '#3a4'
@@ -405,9 +530,9 @@ function App () {
 
   // Build route types distribution bar
   const routeTypes = useMemo(() => {
-    if (!selectedStop) return null
+    if (!selectedStop.available) return null
 
-    const routeTypes = selectedStop.stats['route_types']
+    const routeTypes = selectedStop.stop.stats['route_types']
     const total = Object.values(routeTypes).reduce((a, b) => a + b, 0)
     const routeTypePercentages = Object.entries(routeTypes)
       .map(([key, value]) => ({
@@ -461,14 +586,14 @@ function App () {
       <div className={styles.content}>
         <div className={styles.stopInfo}>
           {searchField}
-          {selectedStop && (
-            <div className={styles.charts} ref={chartsRef}>
+          {selectedStop.available && (
+            <div className={styles.charts}>
               {daySelector}
               <h2 className={styles.stopName}>
-                {selectedStop.stats['stop_name']}
+                {selectedStop.stop.stats['stop_name']}
               </h2>
               <span className={styles.municipality}>
-                {selectedStop.stats['municipality']}
+                {selectedStop.stop.stats['municipality']}
               </span>
               {ranking}
               <h3 className={styles.chartTitle}>Abfahrten pro Stunde</h3>
@@ -477,6 +602,7 @@ function App () {
               {routeTypes}
             </div>
           )}
+          {selectedStop.loading && skeleton}
         </div>
 
         <div className={styles.mapWrapper}>
@@ -500,10 +626,12 @@ function App () {
 
             {circleMarkers}
 
-            {selectedStop && (
+            {selectedStop.available && (
               <Marker
                 icon={customMarker}
-                position={selectedStop.travelTimes[day]['stop_info']['coord']}
+                position={
+                  selectedStop.stop.travelTimes[day]['stop_info']['coord']
+                }
               />
             )}
           </MapContainer>
