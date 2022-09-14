@@ -70,9 +70,6 @@
           position: absolute;
           z-index: 1;
 
-          opacity: 0;
-          transition: opacity 0.25s;
-
           &:after {
             content: '';
             position: absolute;
@@ -87,7 +84,6 @@
 
         &:hover .tooltip {
           visibility: visible;
-          opacity: 1;
         }
       }
     }
