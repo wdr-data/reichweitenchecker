@@ -1,0 +1,115 @@
+.heatmap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: visible;
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 20px;
+
+    .day {
+      text-align: right;
+      width: 25px;
+      margin-right: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .bar {
+      flex-grow: 1;
+
+      // display: flex;
+      // flex-direction: row;
+      // justify-content: stretch;
+      // align-items: center;
+
+      // border-radius: 3px;
+      // overflow: hidden;
+
+      display: grid;
+      grid-template-columns: repeat(24, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 0px;
+      grid-row-gap: 0px;
+
+      .cell {
+        //flex-grow: 1;
+        position: relative;
+        height: 20px;
+        display: block;
+        margin: 0;
+
+        overflow: visible;
+
+        &:first-child {
+          border-top-left-radius: 3px;
+          border-bottom-left-radius: 3px;
+        }
+
+        &:last-child {
+          border-top-right-radius: 3px;
+          border-bottom-right-radius: 3px;
+        }
+
+        .tooltip {
+          visibility: hidden;
+          background-color: black;
+          color: #fff;
+          text-align: center;
+          padding: 3px 0;
+          border-radius: 6px;
+          bottom: 22px;
+          left: 50%;
+
+          width: 38px;
+          margin-left: -19px;
+
+          position: absolute;
+          z-index: 1;
+
+          opacity: 0;
+          transition: opacity 0.25s;
+
+          &:after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: black transparent transparent transparent;
+          }
+        }
+
+        &:hover .tooltip {
+          visibility: visible;
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  .hours {
+    --spacingLeft: calc(25px + 0.5rem);
+    --cellWidth: calc(calc(100% - var(--spacingLeft)) / 24);
+    width: calc(var(--cellWidth) * 28);
+    margin-left: calc(var(--spacingLeft) - calc(var(--cellWidth) * 2));
+    font-size: 0.9rem;
+
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: 1fr;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+
+    .tick {
+      text-align: center;
+      display: block;
+      margin: 0;
+    }
+  }
+}

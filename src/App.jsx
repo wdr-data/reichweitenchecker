@@ -339,8 +339,6 @@ function App () {
     return (
       <HeatMap
         className={styles.heatmap}
-        width={chartsWidth}
-        height={193}
         data={selectedStop.stats['heatmap']}
       />
     )
