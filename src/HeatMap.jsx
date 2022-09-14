@@ -39,12 +39,14 @@ const HeatMap = ({ data, ...rest }) => {
   return (
     <div {...rest} className={clsx(styles.heatmap, rest.className)}>
       {WEEKDAYS.map((day, i) => (
-        <div key={i} className={styles.row}>
-          <span className={styles.day}>{day.slice(0, 2)}</span>
-          <div className={styles.bar}>
+        <div key={`row-${i}`} className={styles.row}>
+          <span key={`label-${i}`} className={styles.day}>
+            {day.slice(0, 2)}
+          </span>
+          <div key={`bar-${i}`} className={styles.bar}>
             {data[day].map((value, j) => (
               <div
-                key={j}
+                key={`${i}-${j}`}
                 className={styles.cell}
                 style={{
                   backgroundColor:
@@ -53,7 +55,9 @@ const HeatMap = ({ data, ...rest }) => {
                       : '#f8f8f8'
                 }}
               >
-                <div className={styles.tooltip}>{value}</div>
+                <div key={`${i}-${j}-tooltip`} className={styles.tooltip}>
+                  {value}
+                </div>
               </div>
             ))}
           </div>
@@ -63,7 +67,9 @@ const HeatMap = ({ data, ...rest }) => {
         {[0, 1, 2, 3, 4, 5, 6]
           .map(hour => `${hour * 4}`)
           .map(hour => (
-            <div className={styles.tick}>{hour}</div>
+            <div key={`tick-${hour}`} className={styles.tick}>
+              {hour}
+            </div>
           ))}
       </div>
     </div>
