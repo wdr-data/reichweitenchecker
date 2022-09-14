@@ -42,7 +42,8 @@
     width: 300px;
     max-width: 300px;
     padding: 1rem;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     .searchField {
       width: unset;
@@ -204,7 +205,8 @@
     max-height: unset;
     .stopInfo {
       width: unset;
-      max-width: unset;
+      max-width: 100%;
+      overflow-x: hidden;
     }
     .mapWrapper {
       .mapTitle {
