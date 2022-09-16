@@ -10,6 +10,7 @@ import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
 import HeatMap from './HeatMap'
 import Map from './Map'
+import FAQ from './FAQ'
 import { format } from './util'
 
 const DAYS_LESS = ['Werktag', 'Samstag', 'Sonntag']
@@ -45,7 +46,9 @@ function encodeFileName (fileName) {
   )
 }
 
-const startStopName = decodeURIComponent(window.location.hash.slice(1))
+const startStopName = ['#faq', '#close'].includes(window.location.hash)
+  ? ''
+  : decodeURIComponent(window.location.hash.slice(1))
 
 const skeleton = (
   <div className={styles.skeleton}>
@@ -167,9 +170,17 @@ function App () {
     available: false
   })
   const selectedStopRef = React.useRef(null)
-
   useEffect(() => {
     selectedStopRef.current = selectedStop
+  }, [selectedStop])
+
+  // FAQ dialog handling
+  const [faqOpen, setFaqOpen] = useState(false)
+  const handleFAQClose = useCallback(() => {
+    window.location.hash = selectedStop.available
+      ? fixedEncodeURIComponent(selectedStop.stopName)
+      : ''
+    setFaqOpen(false)
   }, [selectedStop])
 
   const [day, setDay] = useState('Werktag')
@@ -256,10 +267,43 @@ function App () {
     window.location.hash = fixedEncodeURIComponent(stop)
   }, [])
 
-  // Load stop from URL location hash
+  // Listen to location hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === '#faq') {
+        setFaqOpen(true)
+        return
+      } else {
+        setFaqOpen(false)
+      }
+
+      // seems to be a firefox mobile thing??
+      if (window.location.hash === '#close') {
+        return
+      }
+
+      const stopName = decodeURIComponent(window.location.hash.slice(1))
+      if (stopName) {
+        handleStopChange(null, { label: stopName })
+      }
+    }
+    window.addEventListener('hashchange', handleHashChange)
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange)
+    }
+  }, [handleStopChange])
+
+  // Load stop from URL location hash on page load
   useEffect(() => {
     if (!travelStops) return
     if (window.location.hash) {
+      if (window.location.hash === '#faq') {
+        setFaqOpen(true)
+        return
+      } else if (window.location.hash === '#close') {
+        window.location.hash = ''
+        return
+      }
       handleStopChange(null, {
         label: decodeURIComponent(window.location.hash.slice(1))
       })
@@ -449,7 +493,16 @@ function App () {
             className={styles.logo}
           />
         </a>
+        <a
+          href='#faq'
+          aria-label='FAQ anzeigen'
+          className={styles.faqButton}
+          onClick={() => setFaqOpen(true)}
+        >
+          &#70;
+        </a>
       </div>
+      <FAQ open={faqOpen} handleClose={handleFAQClose} />
       <div className={styles.content}>
         <div className={styles.stopInfo}>
           {searchField}
@@ -482,8 +535,11 @@ function App () {
       </div>
       <div className={styles.footer}>
         <span>&copy; WDR 2022</span>&nbsp;|&nbsp;
-        <span>Impressum</span>&nbsp;|&nbsp;
-        <span>Datenschutz</span>
+        <a href='https://www1.wdr.de/impressum/index.html'>Impressum</a>
+        &nbsp;|&nbsp;
+        <a href='https://www1.wdr.de/hilfe/datenschutz102.html'>Datenschutz</a>
+        &nbsp;|&nbsp;
+        <a href='https://www1.wdr.de/kontakt/index.html'>Kontakt</a>
       </div>
     </div>
   )
