@@ -51,7 +51,7 @@ const HeatMap = ({ data, ...rest }) => {
                 style={{
                   backgroundColor:
                     value > 0
-                      ? colorMapMain(1 - (value - min) / max)
+                      ? colorMapMain(1 - (value - min) / (max - min))
                       : '#f8f8f8'
                 }}
               >
