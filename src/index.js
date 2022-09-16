@@ -12,7 +12,8 @@ const theme = createTheme({
       color: '#000000'
     },
     body1: {
-      margin: '1rem 0'
+      marginBottom: '.75rem',
+      marginTop: '0'
     }
   },
   palette: {

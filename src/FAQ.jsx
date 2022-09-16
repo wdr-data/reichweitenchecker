@@ -88,8 +88,8 @@ export default function FAQ ({ open, handleClose }) {
             Haltestellen berechnen kann. Für die Werktage haben wir die
             Verbindungen für ein Zeitfenster an einem Montag berechnet, bei
             einer Abfahrt zwischen 6 und 10 Uhr und einer maximalen Reisedauer
-            von 60 Minuten. Für Samstag wurde als Zeitfenster für die Abfahrt X
-            bis Y Uhr gewählt, für Sonntag von X bis Y Uhr.
+            von 60 Minuten. Für Samstag und Sonntag wurden als Zeitfenster für
+            die Abfahrt 10 bis 14 Uhr gewählt.
           </Typography>
 
           <Typography>
