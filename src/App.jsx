@@ -123,10 +123,17 @@ const skeleton = (
   </div>
 )
 
+const STOP_STATE_INITIAL = {
+  loading: false,
+  stop: {},
+  stopName: '',
+  available: false
+}
+
 const ACTION_TYPES = {
   FETCH_START: 'FETCH_START',
   FETCH_SUCCESS: 'FETCH_SUCCESS',
-  FETCH_ERROR: 'FETCH_ERROR'
+  FETCH_CLEAR: 'FETCH_CLEAR'
 }
 
 export const stopReducer = (state, action) => {
@@ -134,7 +141,6 @@ export const stopReducer = (state, action) => {
     case ACTION_TYPES.FETCH_START:
       return {
         loading: true,
-        error: false,
         stop: {},
         stopName: action.stopName,
         available: false
@@ -143,17 +149,11 @@ export const stopReducer = (state, action) => {
       return {
         ...state,
         loading: false,
-        error: false,
         stop: action.stop,
         available: true
       }
-    case ACTION_TYPES.FETCH_ERROR:
-      return {
-        error: true,
-        loading: false,
-        stop: {},
-        available: false
-      }
+    case ACTION_TYPES.FETCH_CLEAR:
+      return STOP_STATE_INITIAL
     default:
       return state
   }
@@ -162,13 +162,10 @@ export const stopReducer = (state, action) => {
 function App () {
   const [travelStops, setTravelStops] = useState([])
 
-  const [selectedStop, selectedStopDispatch] = useReducer(stopReducer, {
-    loading: false,
-    stopName: '',
-    stop: {},
-    error: false,
-    available: false
-  })
+  const [selectedStop, selectedStopDispatch] = useReducer(
+    stopReducer,
+    STOP_STATE_INITIAL
+  )
   const selectedStopRef = React.useRef(null)
   useEffect(() => {
     selectedStopRef.current = selectedStop
@@ -207,7 +204,11 @@ function App () {
 
   // Load stop data on selection
   const handleStopChange = useCallback(async (event, stop) => {
-    if (!stop || stop.label === selectedStopRef.current?.stopName) {
+    if (!stop) {
+      selectedStopDispatch({ type: ACTION_TYPES.FETCH_CLEAR })
+      return
+    }
+    if (stop.label === selectedStopRef.current?.stopName) {
       return
     }
     selectedStopDispatch({
@@ -275,6 +276,11 @@ function App () {
         return
       } else {
         setFaqOpen(false)
+      }
+
+      if (['', '#'].includes(window.location.hash)) {
+        handleStopChange(null, null)
+        return
       }
 
       // seems to be a firefox mobile thing??

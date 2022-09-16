@@ -26,7 +26,6 @@ export default function Map ({ selectedStop, day, ...props }) {
   const map = useRef(null)
 
   const dayRef = React.useRef(day)
-
   useEffect(() => {
     dayRef.current = day
   }, [day])
@@ -56,10 +55,6 @@ export default function Map ({ selectedStop, day, ...props }) {
       }),
       'bottom-left'
     )
-
-    map.current.on('zoom', () => {
-      console.log(map.current.getZoom())
-    })
 
     return () => {
       map.current.remove()
@@ -119,6 +114,14 @@ export default function Map ({ selectedStop, day, ...props }) {
     return () => marker.remove()
   }, [map, selectedStop])
 
+  // Destination unloading
+  useEffect(() => {
+    if (map.current)
+      map.current
+        .getSource('destinations')
+        ?.setData({ type: 'FeatureCollection', features: [] })
+  }, [map, selectedStop])
+
   // Destinations
   useEffect(() => {
     if (!map.current || !selectedStop.available) return // wait for map to initialize
@@ -154,10 +157,10 @@ export default function Map ({ selectedStop, day, ...props }) {
       data: geojsonData
     }
 
-    let source
+    const source = map.current.getSource('destinations')
 
     const doTheThing = () => {
-      source = map.current.getSource('destinations')
+      let source = map.current.getSource('destinations')
       if (source) {
         source.setData(sourceData.data)
       } else {
@@ -190,10 +193,20 @@ export default function Map ({ selectedStop, day, ...props }) {
         })
       }
     }
-    if (map.current.loaded()) {
-      doTheThing()
+
+    // Map is loading and source has not been created yet
+    if (!map.current.isStyleLoaded() && !source) {
+      map.current.once('load', doTheThing)
+      // Map has loaded and source has been created, but is still processing a change
+    } else if (source && !map.current.isSourceLoaded('destinations')) {
+      map.current.once('sourcedata', e => {
+        if (e.sourceId === 'destinations') {
+          doTheThing()
+        }
+      })
+      // Map has loaded and source has been created and is ready
     } else {
-      map.current.on('load', doTheThing)
+      doTheThing()
     }
   }, [map, selectedStop, day, mapShowTransfers])
 
