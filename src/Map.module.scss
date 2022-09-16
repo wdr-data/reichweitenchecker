@@ -1,0 +1,57 @@
+.mapWrap {
+  position: relative;
+  flex-grow: 1;
+  width: 100%;
+
+  :global(.maplibregl-popup-content) {
+    padding: 8px 13px;
+    font-family: 'Thesis', sans-serif;
+    font-size: 1rem;
+  }
+  :global(.maplibregl-popup-anchor-left .maplibregl-popup-tip) {
+    margin-right: -1px;
+  }
+  :global(.maplibregl-popup-anchor-right .maplibregl-popup-tip) {
+    margin-left: -1px;
+  }
+  :global(.maplibregl-popup-anchor-top .maplibregl-popup-tip) {
+    margin-bottom: -1px;
+  }
+  :global(.maplibregl-popup-anchor-bottom .maplibregl-popup-tip) {
+    margin-top: -1px;
+  }
+}
+
+.map {
+  position: absolute !important;
+  height: 100%;
+  width: 100%;
+}
+
+.customMapControls {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  height: 30px;
+  padding: 0 8px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  background-color: white;
+  border-radius: 2px;
+  outline: 2px solid rgba(0, 0, 0, 0.2);
+
+  font-size: 1rem;
+  font-family: 'Thesis', sans-serif;
+
+  .indicator {
+    display: inline-block;
+    height: 13px;
+    width: 13px;
+    border-radius: 100px;
+    margin-right: 4px;
+    border: 1px solid black;
+  }
+}

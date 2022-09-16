@@ -1,17 +1,7 @@
 import * as React from 'react'
 import { useState, useCallback, useEffect, useMemo, useReducer } from 'react'
 
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  CircleMarker,
-  Popup
-} from 'react-leaflet'
-import { Icon, Point } from 'leaflet'
 import clsx from 'clsx'
-import Switch from '@mui/material/Switch'
-import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Skeleton from '@mui/material/Skeleton'
@@ -19,30 +9,8 @@ import Skeleton from '@mui/material/Skeleton'
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
 import HeatMap from './HeatMap'
-import { colorMapMain, colorMapAlt } from './colorMap'
-
-import customMarkerImg from './img/haltestelle_marker.svg'
-
-const customMarker = new Icon({
-  iconUrl: customMarkerImg,
-  iconRetinaUrl: customMarkerImg,
-  iconAnchor: new Point(17, 50),
-  popupAnchor: null,
-  shadowUrl: null,
-  shadowSize: null,
-  shadowAnchor: null,
-  iconSize: new Point(34, 50)
-})
-
-const WEEKDAYS = [
-  'Montag',
-  'Dienstag',
-  'Mittwoch',
-  'Donnerstag',
-  'Freitag',
-  'Samstag',
-  'Sonntag'
-]
+import Map from './Map'
+import { format } from './util'
 
 const DAYS_LESS = ['Werktag', 'Samstag', 'Sonntag']
 
@@ -75,12 +43,6 @@ function encodeFileName (fileName) {
     encodeURIComponent(fixedEncodeURIComponent(fileName))
     //fixedEncodeURIComponent(fileName)
   )
-}
-
-const numberFormatter = new Intl.NumberFormat('de-DE')
-
-function format (number) {
-  return numberFormatter.format(number)
 }
 
 const startStopName = decodeURIComponent(window.location.hash.slice(1))
@@ -196,7 +158,6 @@ export const stopReducer = (state, action) => {
 
 function App () {
   const [travelStops, setTravelStops] = useState([])
-  const [map, setMap] = useState(null)
 
   const [selectedStop, selectedStopDispatch] = useReducer(stopReducer, {
     loading: false,
@@ -212,11 +173,6 @@ function App () {
   }, [selectedStop])
 
   const [day, setDay] = useState('Werktag')
-  const dayRef = React.useRef(day)
-
-  useEffect(() => {
-    dayRef.current = day
-  }, [day])
 
   // Load travel stops on page load
   useEffect(() => {
@@ -237,17 +193,6 @@ function App () {
     }
     fetchTravelStops()
   }, [])
-
-  // Set initial map view
-  useEffect(() => {
-    if (!map) {
-      return
-    }
-    map.fitBounds([
-      [50.3103, 5.8941],
-      [52.5295, 9.4868]
-    ])
-  }, [map])
 
   // Load stop data on selection
   const handleStopChange = useCallback(async (event, stop) => {
@@ -311,102 +256,15 @@ function App () {
     window.location.hash = fixedEncodeURIComponent(stop)
   }, [])
 
-  // Set map location & zoom on stop selection
-  useEffect(() => {
-    if (!(selectedStop.available && map)) return
-
-    const currentlySelectedDay = dayRef.current
-    const destinations =
-      selectedStop.stop.travelTimes[currentlySelectedDay].destinations
-
-    const destLat = destinations.map(c => c['coord'][0])
-    const destLng = destinations.map(c => c['coord'][1])
-    const handle = window.setTimeout(() => {
-      console.log('current day', currentlySelectedDay)
-      map.invalidateSize()
-      if (destLat.length > 0 && destLng.length > 0) {
-        map.fitBounds([
-          [Math.min(...destLat), Math.min(...destLng)],
-          [Math.max(...destLat), Math.max(...destLng)]
-        ])
-      } else {
-        map.setView(
-          selectedStop.stop.travelTimes[currentlySelectedDay]['stop_info'][
-            'coord'
-          ],
-          13
-        )
-      }
-    }, 100)
-    return () => window.clearTimeout(handle)
-  }, [map, selectedStop])
-
   // Load stop from URL location hash
   useEffect(() => {
-    if (!travelStops || !map) return
+    if (!travelStops) return
     if (window.location.hash) {
       handleStopChange(null, {
         label: decodeURIComponent(window.location.hash.slice(1))
       })
     }
-  }, [travelStops, handleStopChange, map])
-
-  const [mapShowTransfers, setMapShowTransfers] = useState(true)
-
-  // Build circle markers for each destination
-  const circleMarkers = useMemo(() => {
-    if (!selectedStop.available) {
-      return []
-    }
-
-    return selectedStop.stop.travelTimes[day]['destinations'].map(
-      destination => {
-        if (!mapShowTransfers && destination['trans'] > 0) {
-          return null
-        }
-        return (
-          <CircleMarker
-            key={`${destination['id']}_${destination['time']}_${day}_${mapShowTransfers}`}
-            center={destination['coord']}
-            pathOptions={{
-              color: '#000',
-              fillColor: colorMapMain(destination['time'] / 3600),
-              //fillColor: colorMapMain(Math.min(destination['trans'], 3) / 3),
-              weight: 0.2, // 1.5,
-              fillOpacity: 0.9
-            }}
-          >
-            <Popup>
-              <b>{destination['name']}</b>
-              <br />
-              Erreichbar in {format((destination['time'] / 60).toFixed(1))} min
-              <br />
-              Erfordert {destination['trans']} mal Umsteigen
-            </Popup>
-          </CircleMarker>
-        )
-      }
-    )
-  }, [selectedStop, mapShowTransfers, day])
-
-  // Build custom map controls
-  const mapControls = useMemo(() => {
-    return (
-      <div className={styles.customMapControls}>
-        <div className={styles.customMapControl}>
-          <Stack direction='row' spacing={0} alignItems='center'>
-            <span>Ohne Umsteigen</span>
-            <Switch
-              defaultChecked
-              onChange={(ev, checked) => setMapShowTransfers(checked)}
-              inputProps={{ 'aria-label': 'Mit Umsteigen' }}
-            />
-            <span>Mit Umsteigen</span>
-          </Stack>
-        </div>
-      </div>
-    )
-  }, [])
+  }, [travelStops, handleStopChange])
 
   // Build search field
   const searchField = useMemo(
@@ -461,10 +319,19 @@ function App () {
   const heatmap = useMemo(() => {
     if (!selectedStop.available) return null
     return (
-      <HeatMap
-        className={styles.heatmap}
-        data={selectedStop.stop.stats['heatmap']}
-      />
+      <>
+        <HeatMap
+          className={styles.heatmap}
+          data={selectedStop.stop.stats['heatmap']}
+        />
+        <div
+          className={clsx(styles.distributionBar, styles.heatmapLegendBar)}
+        />
+        <div className={styles.barLegend}>
+          <span>Wenige Fahrten</span>
+          <span>Viele Fahrten</span>
+        </div>
+      </>
     )
   }, [selectedStop])
 
@@ -517,11 +384,11 @@ function App () {
             />
           </div>
 
-          <div className={styles.ranksLegend}>
+          <div className={styles.barLegend}>
             <span className={styles.ranksLegendWorse}>
-              gleich viel/weniger Fahrten
+              Gleich viel/weniger Fahrten
             </span>
-            <span className={styles.ranksLegendBetter}>mehr Fahrten</span>
+            <span className={styles.ranksLegendBetter}>Mehr Fahrten</span>
           </div>
         </>
       ),
@@ -610,31 +477,7 @@ function App () {
             <b>Karte:</b> Welche Haltestellen sind in einer Stunde erreichbar?
           </h3>
           {daySelector}
-
-          <MapContainer
-            ref={setMap}
-            className={styles.mapContainer}
-            scrollWheelZoom={true}
-            touchZoom={true}
-          >
-            {mapControls}
-
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-            />
-
-            {circleMarkers}
-
-            {selectedStop.available && (
-              <Marker
-                icon={customMarker}
-                position={
-                  selectedStop.stop.travelTimes[day]['stop_info']['coord']
-                }
-              />
-            )}
-          </MapContainer>
+          <Map selectedStop={selectedStop} day={day} />
         </div>
       </div>
       <div className={styles.footer}>

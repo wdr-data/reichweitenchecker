@@ -83,6 +83,11 @@
 
       .heatmap {
       }
+      .heatmapLegendBar {
+        margin-top: 0.5rem;
+        background-image: url('./img/magma_custom.png');
+        background-size: 100% 100%;
+      }
 
       .distributionBar {
         border-radius: 3px;
@@ -98,7 +103,7 @@
         }
       }
 
-      .ranksLegend {
+      .barLegend {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -148,7 +153,6 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    width: 100%;
 
     .mapTitle {
       margin: 0.5rem;
@@ -158,36 +162,6 @@
 
     .dayButtonGroup {
       display: none;
-    }
-
-    .mapContainer {
-      flex-grow: 1;
-      width: 100%;
-      .customMapControls {
-        position: absolute;
-        top: 12px;
-        left: 55px;
-        height: 30px;
-        padding: 0 8px;
-        z-index: 1000;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-
-        background-color: white;
-        border-radius: 2px;
-        outline: 2px solid rgba(0, 0, 0, 0.2);
-
-        font-size: 1rem;
-        font-family: 'Thesis', sans-serif;
-      }
-
-      :global(.leaflet-popup-content-wrapper) {
-        border-radius: 5px;
-        :global(.leaflet-popup-content) {
-          margin: 8px 14px;
-        }
-      }
     }
   }
 }
@@ -209,6 +183,7 @@
       overflow-x: hidden;
     }
     .mapWrapper {
+      min-height: 85vh;
       .mapTitle {
         margin: 0.5rem 1rem;
       }
@@ -220,7 +195,6 @@
       }
       flex-grow: 1;
       .mapContainer {
-        min-height: 65vh;
       }
     }
   }

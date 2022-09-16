@@ -20,6 +20,7 @@
     "@visx/tooltip": "^2.10.0",
     "d3-scale-chromatic": "^3.0.0",
     "leaflet": "^1.8.0",
+    "maplibre-gl": "^2.4.0",
     "match-sorter": "^6.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -46,7 +47,9 @@
     "production": [
       ">0.2%",
       "not dead",
-      "not op_mini all"
+      "not op_mini all",
+      "defaults",
+      "not ie 11"
     ],
     "development": [
       "last 1 chrome version",
