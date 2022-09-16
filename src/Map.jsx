@@ -110,14 +110,14 @@ export default function Map ({ selectedStop, day, ...props }) {
     markerSvg.height = 50
 
     const markerLocation =
-      selectedStop.stop.travelTimes[day]['stop_info']['coord']
+      selectedStop.stop.travelTimes[dayRef.current]['stop_info']['coord']
     const marker = new maplibregl.Marker({
       anchor: 'bottom',
       element: markerSvg
     }).setLngLat([markerLocation[1], markerLocation[0]])
     marker.addTo(map.current)
     return () => marker.remove()
-  }, [map, selectedStop, day])
+  }, [map, selectedStop])
 
   // Destinations
   useEffect(() => {
