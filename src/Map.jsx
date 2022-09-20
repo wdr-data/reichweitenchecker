@@ -36,7 +36,7 @@ export default function Map ({ selectedStop, day, ...props }) {
     if (map.current) return //stops map from intializing more than once
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: `${process.env.PUBLIC_URL}/style-custom.json`,
+      style: `${process.env.PUBLIC_URL}/assets/style-v1.json`,
       center: [7.99, 51.431],
       zoom: 8,
       maxBounds: bounds,

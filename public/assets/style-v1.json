@@ -23,11 +23,11 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "https://tiles.wdr.wtf/services/nrw"
+      "url": "https://d2zahzl4khod5h.cloudfront.net/services/nrw"
     }
   },
-  "sprite": "https://tiles.wdr.wtf/app/sprite",
-  "glyphs": "https://tiles.wdr.wtf/app/fonts/{fontstack}/{range}.pbf",
+  "sprite": "https://d2zahzl4khod5h.cloudfront.net/assets/sprites/positron/sprite",
+  "glyphs": "https://d2zahzl4khod5h.cloudfront.net/assets/fonts/{fontstack}/{range}.pbf",
   "transition": {
     "duration": 250,
     "delay": 0
