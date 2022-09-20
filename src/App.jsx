@@ -494,7 +494,7 @@ function App () {
       <div className={styles.header}>
         <a href='https://wdr.de/'>
           <img
-            src={`${process.env.PUBLIC_URL}/wdr_logo.svg`}
+            src={`${process.env.PUBLIC_URL}/img/wdr_logo.svg`}
             alt='WDR Logo'
             className={styles.logo}
           />
