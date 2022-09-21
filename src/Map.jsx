@@ -41,8 +41,20 @@ export default function Map ({ selectedStop, day, ...props }) {
       zoom: 8,
       maxBounds: bounds,
       dragRotate: false,
-      touchPitch: false
+      touchPitch: false,
+      attributionControl: false //new maplibregl.AttributionControl()//`<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>`,
     })
+
+    map.current.addControl(
+      new maplibregl.AttributionControl({
+        customAttribution: [
+          `<a href="http://openmaptiles.org/" rel="nofollow" target="_blank">© OpenMapTiles</a>`,
+          `<a href="https://www.openstreetmap.org/copyright" rel="nofollow" target="_blank">© OpenStreetMap Mitwirkende</a>`,
+        ],
+      }),
+      'bottom-right'
+    )
+
     map.current.touchZoomRotate.disableRotation()
     map.current.fitBounds([
       [5.8941, 50.3103],
@@ -53,7 +65,7 @@ export default function Map ({ selectedStop, day, ...props }) {
         showCompass: false,
         visualizePitch: false
       }),
-      'bottom-left'
+      'bottom-right'
     )
 
     return () => {

@@ -40,8 +40,9 @@
   align-items: center;
 
   background-color: white;
-  border-radius: 2px;
-  outline: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;    
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 10%);
+
 
   font-size: 1rem;
   font-family: 'Thesis', sans-serif;
