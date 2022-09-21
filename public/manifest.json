@@ -1,6 +1,6 @@
 {
-  "short_name": "ÖPNV Reichweitenchecker",
-  "name": "ÖPNV Reichweitenchecker - Wie weit komme ich mit dem ÖPNV?",
+  "short_name": "Reichweitenchecker",
+  "name": "Reichweitenchecker - Wie weit komme ich mit öffentlichen Verkehrsmitteln?",
   "icons": [
     {
       "src": "favicon.ico",
