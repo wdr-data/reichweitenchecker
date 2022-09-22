@@ -125,6 +125,7 @@ export default function VirtualizedAutocomplete ({
   label,
   loading,
   options,
+  onChange,
   ...props
 }) {
   /*
@@ -133,8 +134,9 @@ export default function VirtualizedAutocomplete ({
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncing, setDebouncing] = useState(false)
 
+  // Debounced search query
   const acceptSearchQuery = useCallback(query => {
-    setSearchQuery(query)
+    setSearchQuery(query ? query.trim() : '')
     setDebouncing(false)
   }, [])
 
@@ -142,12 +144,14 @@ export default function VirtualizedAutocomplete ({
     return debounce(acceptSearchQuery, 500)
   }, [acceptSearchQuery])
 
+  // Make sure debounce is cleared when component unmounts
   useEffect(() => {
     return () => {
       setSearchQueryDebounced.clear()
     }
   }, [setSearchQueryDebounced])
 
+  // Handle typing in the search field
   const handleSearchQueryChange = useCallback(
     event => {
       const query = event.target.value
@@ -155,6 +159,17 @@ export default function VirtualizedAutocomplete ({
       setDebouncing(true)
     },
     [setSearchQueryDebounced]
+  )
+
+  // This is only needed for when you click the X button to clear the search
+  const onChangeProxy = useCallback(
+    (event, value) => {
+      if (value === null) {
+        handleSearchQueryChange(event)
+      }
+      onChange(event, value)
+    },
+    [onChange, handleSearchQueryChange]
   )
 
   const filteredOptions = useMemo(() => {
@@ -191,6 +206,7 @@ export default function VirtualizedAutocomplete ({
       renderGroup={params => params}
       loading={debouncing || loading}
       options={filteredOptions}
+      onChange={onChangeProxy}
       {...props}
     />
   )
