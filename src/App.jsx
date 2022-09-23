@@ -52,61 +52,55 @@ const startStopName = ['#faq', '#close'].includes(window.location.hash)
 
 const skeleton = (
   <div className={styles.skeleton}>
+    {/* Switch */}
     <Skeleton variant='rounded' height={30} sx={{ marginTop: '1rem' }} />
-    <Skeleton width='60%' sx={{ fontSize: '2rem', marginTop: '1rem' }} />
+
+    {/* Station name */}
+    <Skeleton width='60%' sx={{ fontSize: '1.5rem', marginTop: '0.75rem' }} />
     <Skeleton width='30%' />
-    <Skeleton width='90%' sx={{ marginTop: '1rem' }} />
+
+    {/* Station ranking */}
+    <Skeleton width='90%' sx={{ marginTop: '0.75rem' }} />
     <Skeleton width='95%' />
     <Skeleton width='85%' />
     <Skeleton width='88%' />
-    <Skeleton width='60%' />
-    <br />
-    <Skeleton variant='rounded' height={20} />
-    <br />
-    <Skeleton width='65%' sx={{ fontSize: '2rem' }} />
+    <Skeleton variant='rounded' height={20} sx={{ marginTop: '0.75rem' }} />
     <Skeleton
-      width='90%'
+      width='45%'
+      sx={{ display: 'inline-block', marginRight: '30%' }}
+    />
+    <Skeleton width='25%' sx={{ display: 'inline-block' }} />
+
+    {/* Heatmap */}
+    <Skeleton width='65%' sx={{ fontSize: '1.5rem', marginTop: '0.75rem' }} />
+    {[...Array(7)].map((_, i) => (
+      <Skeleton
+        key={i}
+        width='90%'
+        variant='rounded'
+        height={20}
+        sx={{ marginBottom: '5px', marginLeft: '10%' }}
+      />
+    ))}
+
+    {/* Heatmap legend */}
+    <Skeleton
       variant='rounded'
       height={20}
-      sx={{ marginBottom: '5px', marginLeft: '10%' }}
+      sx={{ marginBottom: '5px', marginTop: '2rem' }}
     />
     <Skeleton
-      width='90%'
-      variant='rounded'
-      height={20}
-      sx={{ marginBottom: '5px', marginLeft: '10%' }}
+      width='25%'
+      sx={{ display: 'inline-block', marginRight: '10%' }}
     />
     <Skeleton
-      width='90%'
-      variant='rounded'
-      height={20}
-      sx={{ marginBottom: '5px', marginLeft: '10%' }}
+      width='25%'
+      sx={{ display: 'inline-block', marginRight: '15%' }}
     />
-    <Skeleton
-      width='90%'
-      variant='rounded'
-      height={20}
-      sx={{ marginBottom: '5px', marginLeft: '10%' }}
-    />
-    <Skeleton
-      width='90%'
-      variant='rounded'
-      height={20}
-      sx={{ marginBottom: '5px', marginLeft: '10%' }}
-    />
-    <Skeleton
-      width='90%'
-      variant='rounded'
-      height={20}
-      sx={{ marginBottom: '5px', marginLeft: '10%' }}
-    />
-    <Skeleton
-      width='90%'
-      variant='rounded'
-      height={20}
-      sx={{ marginBottom: '5px', marginLeft: '10%' }}
-    />
-    <Skeleton width='45%' sx={{ fontSize: '2rem', marginTop: '1.75rem' }} />
+    <Skeleton width='25%' sx={{ display: 'inline-block' }} />
+
+    {/* Route types */}
+    <Skeleton width='45%' sx={{ fontSize: '1.5rem', marginTop: '0.75rem' }} />
     <Skeleton variant='rounded' height={20} />
     <Skeleton
       width='30%'
@@ -374,12 +368,22 @@ function App () {
           className={styles.heatmap}
           data={selectedStop.stop.stats['heatmap']}
         />
-        <div
-          className={clsx(styles.distributionBar, styles.heatmapLegendBar)}
-        />
-        <div className={styles.barLegend}>
-          <span>Wenige Fahrten</span>
-          <span>Viele Fahrten</span>
+        <div className={styles.heatmapLegend}>
+          <div
+            className={clsx(styles.distributionBar, styles.distributionZero)}
+          />
+          <div
+            className={clsx(styles.distributionBar, styles.heatmapLegendBar)}
+          />
+          <div className={styles.labelZero}>
+            <span>Keine Fahrten</span>
+          </div>
+          <div className={styles.labelMin}>
+            <span>Wenige Fahrten</span>
+          </div>
+          <div className={styles.labelMax}>
+            <span>Viele Fahrten</span>
+          </div>
         </div>
       </>
     )
@@ -389,7 +393,7 @@ function App () {
   const ranking = useMemo(
     () =>
       selectedStop.available && (
-        <>
+        <div className={styles.ranking}>
           <p>
             An einem {day} zwischen 6 und 20 Uhr gibt es an dieser Station
             durchschnittlich{' '}
@@ -434,13 +438,26 @@ function App () {
             />
           </div>
 
-          <div className={styles.barLegend}>
-            <span className={styles.ranksLegendWorse}>
-              Gleich viel/weniger Fahrten
-            </span>
-            <span className={styles.ranksLegendBetter}>Mehr Fahrten</span>
+          <div className={styles.barLegendCircles}>
+            <div className={styles.barLegendCirclesItem}>
+              <div
+                className={styles.barLegendCircle}
+                style={{ backgroundColor: '#444' }}
+              />
+              <span className={styles.barLegendCircleLabel}>
+                Gleich viel/weniger Fahrten
+              </span>
+            </div>
+
+            <div className={styles.barLegendCirclesItem}>
+              <div
+                className={styles.barLegendCircle}
+                style={{ backgroundColor: '#3a4' }}
+              />
+              <span className={styles.barLegendCircleLabel}>Mehr Fahrten</span>{' '}
+            </div>
           </div>
-        </>
+        </div>
       ),
     [selectedStop, day]
   )
@@ -460,7 +477,15 @@ function App () {
 
     return (
       <div className={styles.routeTypes}>
-        <div className={styles.distributionBar}>
+        <div
+          className={styles.distributionBar}
+          style={{
+            backgroundColor:
+              colorMapRouteTypes[
+                routeTypePercentages[routeTypePercentages.length - 1].type
+              ]
+          }}
+        >
           {routeTypePercentages.map(({ type, percentage }) => (
             <div
               key={type}
@@ -472,14 +497,14 @@ function App () {
             />
           ))}
         </div>
-        <div className={styles.routeTypesLegend}>
+        <div className={styles.barLegendCircles}>
           {routeTypePercentages.map(({ type, percentage }) => (
-            <div key={type} className={styles.routeTypesLegendItem}>
+            <div key={type} className={styles.barLegendCirclesItem}>
               <div
-                className={styles.routeTypeLegendColor}
+                className={styles.barLegendCircle}
                 style={{ backgroundColor: colorMapRouteTypes[type] }}
               />
-              <div className={styles.routeTypeLegendLabel}>
+              <div className={styles.barLegendCircleLabel}>
                 {type} ({format(percentage.toFixed(1))}%)
               </div>
             </div>

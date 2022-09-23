@@ -84,6 +84,16 @@
         margin-bottom: 0.25rem;
       }
 
+      .ranking {
+        .distributionBar {
+          background-color: #3a4;
+        }
+
+        .barLegendCircles {
+          justify-content: space-between;
+        }
+      }
+
       .chartTitle {
         margin-top: 1rem;
         margin-bottom: 0.25rem;
@@ -97,10 +107,42 @@
 
       .heatmap {
       }
-      .heatmapLegendBar {
+      .heatmapLegend {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr 1.1fr;
+        grid-template-rows: auto auto;
+        gap: 3px 5px;
+        grid-template-areas:
+          'distributionZero distributionBar distributionBar'
+          'labelZero labelMin labelMax';
+
+        font-size: 0.88rem;
         margin-top: 0.5rem;
-        background-image: url('./img/magma_custom.png');
-        background-size: 100% 100%;
+
+        .distributionZero {
+          grid-area: distributionZero;
+          background-color: #f8f8f8;
+
+          box-shadow: #aaa 0 0 3px 0px inset;
+        }
+        .heatmapLegendBar {
+          grid-area: distributionBar;
+          background-image: url('./img/magma_custom.png');
+          background-size: contain;
+          background-repeat: repeat-y;
+        }
+        .labelZero {
+          grid-area: labelZero;
+          text-align: left;
+        }
+        .labelMin {
+          grid-area: labelMin;
+          text-align: left;
+        }
+        .labelMax {
+          grid-area: labelMax;
+          text-align: right;
+        }
       }
 
       .distributionBar {
@@ -117,45 +159,26 @@
         }
       }
 
-      .barLegend {
+      .barLegendCircles {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        row-gap: 0.25rem;
         margin-top: 0.25rem;
-        font-size: 0.8rem;
-        span {
-          display: block;
-        }
-        .ranksLegendWorse {
-          color: #444;
-        }
-        .ranksLegendBetter {
-          color: #3a4;
-        }
-      }
-
-      .routeTypes {
-        .routeTypesLegend {
+        .barLegendCirclesItem {
           display: flex;
           flex-direction: row;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-          row-gap: 0.25rem;
-          margin-top: 0.25rem;
-          .routeTypesLegendItem {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            .routeTypeLegendColor {
-              border-radius: 10px;
-              height: 15px;
-              width: 15px;
-              display: inline-block;
-              margin: 0;
-            }
-            .routeTypeLegendLabel {
-              margin-left: 0.25rem;
-            }
+          align-items: center;
+          .barLegendCircle {
+            border-radius: 10px;
+            height: 15px;
+            width: 15px;
+            display: inline-block;
+          }
+          .barLegendCircleLabel {
+            margin-left: 0.25rem;
+            font-size: 0.88rem;
           }
         }
       }
