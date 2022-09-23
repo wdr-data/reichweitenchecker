@@ -17,7 +17,7 @@ export default function FAQ ({ open, handleClose }) {
       aria-describedby='alert-dialog-description'
     >
       <DialogTitle variant='h5' component='h2' id='alert-dialog-title'>
-        FAQ zum Reichweiten-Checker
+        Der Reichweiten-Checker by WDR aktuell
       </DialogTitle>
       <DialogContent>
         <DialogContentText id='alert-dialog-description'>
@@ -136,10 +136,11 @@ export default function FAQ ({ open, handleClose }) {
           </Typography>
 
           <Typography>
-            Blabla Link:{' '}
+            Für dieses Angebot gilt die{' '}
             <Link href='https://www1.wdr.de/hilfe/datenschutz102.html'>
-              Datenschutz, Cookies, pipapo.
+              Datenschutzerklärung des WDR
             </Link>
+            .
           </Typography>
         </DialogContentText>
       </DialogContent>
