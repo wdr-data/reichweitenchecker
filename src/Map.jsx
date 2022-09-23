@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react'
+import { alpha, styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Stack from '@mui/material/Stack'
 
@@ -15,6 +16,33 @@ import customMarkerImg from './img/haltestelle_marker.svg'
 import { format } from './util'
 
 maplibregl.workerClass = maplibreglWorker
+
+const TransfersSwitch = styled(Switch)(({ theme }) => ({
+  '& .MuiSwitch-switchBase': {
+    color: colorMapAlt(1),
+    '&:hover': {
+      backgroundColor: alpha(colorMapAlt(1), theme.palette.action.hoverOpacity)
+    }
+  },
+  '& .MuiSwitch-switchBase.Mui-checked': {
+    color: colorMapAlt(0.4),
+    '&:hover': {
+      backgroundColor: alpha(
+        colorMapAlt(0.4),
+        theme.palette.action.hoverOpacity
+      )
+    }
+  },
+  '& .MuiSwitch-switchBase + .MuiSwitch-track': {
+    backgroundColor: colorMapAlt(1)
+  },
+  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+    backgroundColor: colorMapAlt(0.4)
+  }
+  // '& .MuiSwitch-thumb': {
+  //   border: `1px solid black`,
+  // }
+}))
 
 const bounds = [
   [4.21, 48.51],
@@ -49,8 +77,8 @@ export default function Map ({ selectedStop, day, ...props }) {
       new maplibregl.AttributionControl({
         customAttribution: [
           `<a href="http://openmaptiles.org/" rel="nofollow" target="_blank">© OpenMapTiles</a>`,
-          `<a href="https://www.openstreetmap.org/copyright" rel="nofollow" target="_blank">© OpenStreetMap Mitwirkende</a>`,
-        ],
+          `<a href="https://www.openstreetmap.org/copyright" rel="nofollow" target="_blank">© OpenStreetMap Mitwirkende</a>`
+        ]
       }),
       'bottom-right'
     )
@@ -270,16 +298,16 @@ export default function Map ({ selectedStop, day, ...props }) {
               style={{ backgroundColor: colorMapAlt(1) }}
             />
             <span>Ohne umsteigen</span>
-            <Switch
+            <TransfersSwitch
               defaultChecked
               onChange={(ev, checked) => setMapShowTransfers(checked)}
               inputProps={{ 'aria-label': 'Mit umsteigen' }}
             />
+            <span>Mit umsteigen</span>
             <div
               className={styles.indicator}
               style={{ backgroundColor: colorMapAlt(0.33) }}
             />
-            <span>Mit umsteigen</span>
           </Stack>
         </div>
       </div>
