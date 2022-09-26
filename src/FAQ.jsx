@@ -7,6 +7,8 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
 
 export default function FAQ ({ open, handleClose }) {
   return (
@@ -18,6 +20,18 @@ export default function FAQ ({ open, handleClose }) {
     >
       <DialogTitle variant='h5' component='h2' id='alert-dialog-title'>
         Der Reichweiten-Checker by WDR aktuell
+        <IconButton
+          aria-label='close'
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme => theme.palette.primary.dark
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
       <DialogContent>
         <DialogContentText id='alert-dialog-description'>
@@ -128,7 +142,11 @@ export default function FAQ ({ open, handleClose }) {
             alle Ergebnisse händisch überprüfen. Falls Ihnen also eine
             Haltestelle auffällt, bei der Sie das Ergebnis für völlig
             unrealistisch halten, sagen Sie uns gerne Bescheid, dann prüfen wir
-            das nach. Schreiben Sie einfach eine Mail an ADRESSE.
+            das nach. Schreiben Sie einfach eine Mail an{' '}
+            <Link href='mailto:newsroom-stories@wdr.de'>
+              newsroom-stories@wdr.de
+            </Link>
+            .
           </Typography>
 
           <Typography variant='h6' component='h3'>
