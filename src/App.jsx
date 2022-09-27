@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Skeleton from '@mui/material/Skeleton'
+import { useTour } from '@reactour/tour'
 
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
@@ -154,6 +155,14 @@ export const stopReducer = (state, action) => {
 }
 
 function App () {
+  const { setIsOpen: setTourIsOpen } = useTour()
+
+  useEffect(() => {
+    if (!window.location.hash) {
+      setTourIsOpen(true)
+    }
+  }, [setTourIsOpen])
+
   const [travelStops, setTravelStops] = useState([])
 
   const [selectedStop, selectedStopDispatch] = useReducer(
@@ -316,7 +325,8 @@ function App () {
       <VirtualizedAutocomplete
         className={clsx(
           styles.searchField,
-          !selectedStop.available && styles.searchFieldInitial
+          !selectedStop.available && styles.searchFieldInitial,
+          'tour-search'
         )}
         defaultValue={startStopName}
         options={travelStops}
@@ -330,9 +340,10 @@ function App () {
         closeText='Schließen'
         openText='Öffnen'
         size='small'
+        onSelect={() => setTourIsOpen(false)}
       />
     ),
-    [travelStops, handleStopChange, selectedStop]
+    [travelStops, handleStopChange, selectedStop, setTourIsOpen]
   )
 
   // Day selector
@@ -527,8 +538,11 @@ function App () {
         <a
           href='#faq'
           aria-label='FAQ anzeigen'
-          className={styles.faqButton}
-          onClick={() => setFaqOpen(true)}
+          className={clsx(styles.faqButton, 'tour-faq')}
+          onClick={() => {
+            setTourIsOpen(false)
+            setFaqOpen(true)
+          }}
         >
           &#70;
         </a>

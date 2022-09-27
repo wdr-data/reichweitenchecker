@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+import { TourProvider } from '@reactour/tour'
 
 const theme = createTheme({
   typography: {
@@ -26,10 +27,25 @@ const theme = createTheme({
   }
 })
 
+const tourSteps = [
+  {
+    selector: '.tour-search',
+    content:
+      'Mit diesem Suchfeld kann nach Haltestellen in ganz NRW gesucht werden.'
+  },
+  {
+    selector: '.tour-faq',
+    content:
+      'Fragen zur Benutzung oder den Daten? Hier gibt es zusätzliche Informationen.'
+  }
+]
+
 const root = ReactDOM.createRoot(document.getElementById('map-widget'))
 root.render(
   <ThemeProvider theme={theme}>
-    <App />
+    <TourProvider steps={tourSteps}>
+      <App />
+    </TourProvider>
   </ThemeProvider>
 )
 
