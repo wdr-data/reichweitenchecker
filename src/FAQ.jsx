@@ -21,7 +21,7 @@ export default function FAQ ({ open, handleClose }) {
       <DialogTitle variant='h5' component='h2' id='alert-dialog-title'>
         Der Reichweiten-Checker by WDR aktuell
         <IconButton
-          aria-label='close'
+          aria-label='Schließen'
           onClick={handleClose}
           sx={{
             position: 'absolute',
@@ -34,7 +34,7 @@ export default function FAQ ({ open, handleClose }) {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <DialogContentText id='alert-dialog-description'>
+        <DialogContentText id='alert-dialog-description' component='div'>
           <Typography variant='h6' component='h3'>
             Was sehe ich hier?
           </Typography>
