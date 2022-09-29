@@ -373,7 +373,7 @@ function App () {
   // Build heatmap
   const heatmap = useMemo(() => {
     if (!selectedStop.available) return null
-    
+
     const allDepartures = [
       ...Object.values(selectedStop.stop.stats['heatmap'])
     ].flat()
@@ -435,15 +435,19 @@ function App () {
             </b>{' '}
             Abfahrten pro Stunde. An{' '}
             <b>
-              {format(
-                (
-                  selectedStop.stop.stats['rank_data'][day][
-                    'dep_per_day_better'
-                  ] * 100
-                ).toFixed(1)
-              )}
+              {selectedStop.stop.stats['rank_data'][day]['dep_per_day_better'] <
+              0.001
+                ? 'weniger als 0,1'
+                : format(
+                    (
+                      selectedStop.stop.stats['rank_data'][day][
+                        'dep_per_day_better'
+                      ] * 100
+                    ).toFixed(1)
+                  )}
+              %{' '}
             </b>
-            % aller Haltestellen in NRW gibt es mehr.
+            aller Haltestellen in NRW gibt es mehr.
           </p>
 
           <div className={styles.distributionBar}>
