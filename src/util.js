@@ -1,5 +1,3 @@
-
-
 const numberFormatter = new Intl.NumberFormat('de-DE')
 
 export function format (number) {
