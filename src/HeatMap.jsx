@@ -36,6 +36,10 @@ const HeatMap = ({ data, ...rest }) => {
     return Math.min(...Object.values(data).flat())
   }, [data])
 
+  const min1 = useMemo(() => {
+    return Math.max(Math.min(...Object.values(data).flat()), 1)
+  }, [data])
+
   return (
     <div {...rest} className={clsx(styles.heatmap, rest.className)}>
       {WEEKDAYS.map((day, i) => (
@@ -51,7 +55,9 @@ const HeatMap = ({ data, ...rest }) => {
                 style={{
                   backgroundColor:
                     value > 0
-                      ? colorMapMain(1 - (value - min) / (max - min))
+                      ? colorMapMain(
+                          1 - (max === 1 ? 1 : (value - min1) / (max - min1))
+                        )
                       : '#f8f8f8'
                 }}
               >

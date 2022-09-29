@@ -373,6 +373,16 @@ function App () {
   // Build heatmap
   const heatmap = useMemo(() => {
     if (!selectedStop.available) return null
+    
+    const allDepartures = [
+      ...Object.values(selectedStop.stop.stats['heatmap'])
+    ].flat()
+    const maxDepartures = Math.max(...allDepartures)
+    const minDepartures = Math.max(
+      Math.min(...allDepartures.filter(n => n !== 0)),
+      1
+    )
+
     return (
       <>
         <HeatMap
@@ -390,10 +400,18 @@ function App () {
             <span>Keine Fahrten</span>
           </div>
           <div className={styles.labelMin}>
-            <span>Wenige Fahrten</span>
+            <span>
+              {maxDepartures === 1
+                ? '–'
+                : `${minDepartures} ${
+                    minDepartures === 1 ? 'Fahrt' : 'Fahrten'
+                  }`}
+            </span>
           </div>
           <div className={styles.labelMax}>
-            <span>Viele Fahrten</span>
+            <span>
+              {maxDepartures} {maxDepartures === 1 ? 'Fahrt' : 'Fahrten'}
+            </span>
           </div>
         </div>
       </>
