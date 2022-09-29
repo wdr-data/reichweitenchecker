@@ -70,6 +70,7 @@ export default function Map ({ selectedStop, day, ...props }) {
       maxBounds: bounds,
       dragRotate: true,
       touchPitch: true,
+      maxPitch: 85,
       attributionControl: false //new maplibregl.AttributionControl()//`<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>`,
     })
 
