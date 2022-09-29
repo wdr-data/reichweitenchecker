@@ -188,7 +188,7 @@ export default function Map ({ selectedStop, day, ...props }) {
           <br />
           Erreichbar in ${format((destination['time'] / 60).toFixed(1))} min
           <br />
-          Erfordert ${destination['trans']} mal Umsteigen`
+          Erfordert ${destination['trans']} Mal umsteigen`
         }
       }))
     }
@@ -298,13 +298,13 @@ export default function Map ({ selectedStop, day, ...props }) {
               className={styles.indicator}
               style={{ backgroundColor: colorMapAlt(1) }}
             />
-            <span>Ohne umsteigen</span>
+            <span>ohne umsteigen</span>
             <TransfersSwitch
               defaultChecked
               onChange={(ev, checked) => setMapShowTransfers(checked)}
               inputProps={{ 'aria-label': 'Mit umsteigen' }}
             />
-            <span>Mit umsteigen</span>
+            <span>mit umsteigen</span>
             <div
               className={styles.indicator}
               style={{ backgroundColor: colorMapAlt(0.33) }}
