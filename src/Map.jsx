@@ -76,6 +76,7 @@ export default function Map ({ selectedStop, day, ...props }) {
     map.current.addControl(
       new maplibregl.AttributionControl({
         customAttribution: [
+          `<a href="https://www.delfi.de/" rel="nofollow" target="_blank">© DELFI</a>`,
           `<a href="http://openmaptiles.org/" rel="nofollow" target="_blank">© OpenMapTiles</a>`,
           `<a href="https://www.openstreetmap.org/copyright" rel="nofollow" target="_blank">© OpenStreetMap Mitwirkende</a>`
         ]
