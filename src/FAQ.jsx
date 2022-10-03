@@ -19,7 +19,7 @@ export default function FAQ ({ open, handleClose }) {
       aria-describedby='alert-dialog-description'
     >
       <DialogTitle variant='h5' component='h2' id='alert-dialog-title'>
-        Der Reichweiten-Checker by WDR aktuell
+        Der WDR-Reichweiten-Checker
         <IconButton
           aria-label='Schließen'
           onClick={handleClose}
