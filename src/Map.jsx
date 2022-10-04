@@ -68,9 +68,8 @@ export default function Map ({ selectedStop, day, ...props }) {
       center: [7.99, 51.431],
       zoom: 8,
       maxBounds: bounds,
-      dragRotate: true,
-      touchPitch: true,
-      maxPitch: 85,
+      dragRotate: false,
+      touchPitch: false,
       attributionControl: false //new maplibregl.AttributionControl()//`<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>`,
     })
 
@@ -92,8 +91,8 @@ export default function Map ({ selectedStop, day, ...props }) {
     ])
     map.current.addControl(
       new maplibregl.NavigationControl({
-        showCompass: true,
-        visualizePitch: true
+        showCompass: false,
+        visualizePitch: false
       }),
       'bottom-right'
     )
