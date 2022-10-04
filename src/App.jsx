@@ -271,11 +271,24 @@ function App () {
     selectedStopDispatch({ type: ACTION_TYPES.FETCH_SUCCESS, stop: stopData })
     window.location.hash = fixedEncodeURIComponent(stop)
 
-    // pianoAnalytics.sendEvent('page.display', {
-    //   's:site_level2': 'data.wdr.de',
-    //   's:page_title': 'WDR-Reichweiten-Checker',
-    //   's:page_type': 'DDJ-Projekt'
-    // })
+    pianoAnalytics.sendEvent('click.action', {
+      's:click': 'Haltestelle suchen',
+      's:click_target': stop,
+      's:click_chapter1': 'Nutzereingabe',
+      's:click_chapter2': 'Haltestelle suchen',
+
+      's:site_level2': 'data.wdr.de',
+      's:brand': 'WDR',
+      's:platform': 'Web',
+      's:editorial_department': 'Newsroom',
+      's:page_type': 'Interaktive Web-Anwendung',
+      's:page_title': 'WDR-Reichweiten-Checker',
+      's:page_chapter1': 'DDJ-Projekt',
+      's:page_chapter2': 'WDR-Reichweiten-Checker',
+      's:page': 'data.wdr.de_Interaktive Web-Anwendung_WDR-Reichweiten-Checker',
+      'd:publication_time': '2022-10-06',
+      'd:last_editorial_update': '2022-10-06'
+    })
   }, [])
 
   // Listen to location hash changes
