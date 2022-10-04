@@ -166,58 +166,56 @@ export default function FAQ ({ open, handleClose }) {
             Wir haben für diese Auswertung verschiedene frei verfügbare Daten
             und Programme benutzt. Bei den Urhebern wollen wir uns an dieser
             Stelle bedanken!
-            <ul>
-              <li>
-                <b>tidytransit</b>: Auswertung von GTFS-Fahrplan-Daten mit dem
-                Statistik-Programm R –{' '}
-                <Link href='https://github.com/r-transit/tidytransit'>
-                  GitHub
-                </Link>
-              </li>
-              <li>
-                <b>gtfs-kit</b>: Verarbeitung von GTFS-Fahrplan-Daten mit Python
-                –{' '}
-                <Link href='https://gitlab.com/mrcagney/gtfs_kit'>GitLab</Link>
-              </li>
-              <li>
-                <b>
-                  <Link href='https://www.delfi.de/'>DELFI e. V.</Link>
-                </b>
-                : Freie Bereitstellung von Deutschlandweiten Fahrplandaten im
-                GTFS-Format
-              </li>
-              <li>
-                <b>
-                  <Link href='https://www.openstreetmap.org/copyright'>
-                    OpenStreetMap Mitwirkende
-                  </Link>
-                </b>
-                : Gemeinschaftlich erstelltes Kartenmaterial
-              </li>
-              <li>
-                <b>tilemaker</b>: Erzeugen von Maptiles aus OSM-Daten –{' '}
-                <Link href='https://github.com/systemed/tilemaker'>GitHub</Link>
-              </li>
-              <li>
-                <b>mbtileserver</b>: Server für Maptiles –{' '}
-                <Link href='https://github.com/consbio/mbtileserver'>
-                  GitHub
-                </Link>
-              </li>
-              <li>
-                <b>maplibre-gl-js</b>: Webkomponente zur Kartendarstellung –{' '}
-                <Link href='https://github.com/maplibre/maplibre-gl-js'>
-                  GitHub
-                </Link>
-              </li>
-              <li>
-                <b>
-                  <Link href='https://openmaptiles.org/'>OpenMapTiles</Link>
-                </b>
-                : Freie Designs für die Kartendarstellung
-              </li>
-            </ul>
           </Typography>
+
+          <ul style={{ color: 'black' }}>
+            <li>
+              <b>tidytransit</b>: Auswertung von GTFS-Fahrplan-Daten mit dem
+              Statistik-Programm R –{' '}
+              <Link href='https://github.com/r-transit/tidytransit'>
+                GitHub
+              </Link>
+            </li>
+            <li>
+              <b>gtfs-kit</b>: Verarbeitung von GTFS-Fahrplan-Daten mit Python –{' '}
+              <Link href='https://gitlab.com/mrcagney/gtfs_kit'>GitLab</Link>
+            </li>
+            <li>
+              <b>
+                <Link href='https://www.delfi.de/'>DELFI e. V.</Link>
+              </b>
+              : Freie Bereitstellung von Deutschlandweiten Fahrplandaten im
+              GTFS-Format
+            </li>
+            <li>
+              <b>
+                <Link href='https://www.openstreetmap.org/copyright'>
+                  OpenStreetMap Mitwirkende
+                </Link>
+              </b>
+              : Gemeinschaftlich erstelltes Kartenmaterial
+            </li>
+            <li>
+              <b>tilemaker</b>: Erzeugen von Maptiles aus OSM-Daten –{' '}
+              <Link href='https://github.com/systemed/tilemaker'>GitHub</Link>
+            </li>
+            <li>
+              <b>mbtileserver</b>: Server für Maptiles –{' '}
+              <Link href='https://github.com/consbio/mbtileserver'>GitHub</Link>
+            </li>
+            <li>
+              <b>maplibre-gl-js</b>: Webkomponente zur Kartendarstellung –{' '}
+              <Link href='https://github.com/maplibre/maplibre-gl-js'>
+                GitHub
+              </Link>
+            </li>
+            <li>
+              <b>
+                <Link href='https://openmaptiles.org/'>OpenMapTiles</Link>
+              </b>
+              : Freie Designs für die Kartendarstellung
+            </li>
+          </ul>
 
           <Typography variant='h6' component='h3'>
             Datenschutz
