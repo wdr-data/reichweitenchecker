@@ -43,8 +43,8 @@ function fixedEncodeURIComponent (str) {
 
 function encodeFileName (fileName) {
   return encodeURIComponent(
-    encodeURIComponent(fixedEncodeURIComponent(fileName))
-    //fixedEncodeURIComponent(fileName)
+    //encodeURIComponent(fixedEncodeURIComponent(fileName))
+    fixedEncodeURIComponent(fileName)
   )
 }
 
@@ -222,51 +222,11 @@ function App () {
 
     stop = stop.label
     const stopURLEncoded = encodeFileName(stop)
-    const [
-      responseTravelTimesMonday,
-      responseTravelTimesSaturday,
-      responseTravelTimesSunday,
-      responseStopStats
-    ] = await Promise.all([
-      fetch(
-        `${process.env.REACT_APP_DATA_URL}/travel_times_proc_monday/${stopURLEncoded}.json`
-      ),
-      fetch(
-        `${process.env.REACT_APP_DATA_URL}/travel_times_proc_saturday/${stopURLEncoded}.json`
-      ),
-      fetch(
-        `${process.env.REACT_APP_DATA_URL}/travel_times_proc_sunday/${stopURLEncoded}.json`
-      ),
-      fetch(
-        `${process.env.REACT_APP_DATA_URL}/stop_stats/${stopURLEncoded}.json`
-      )
-    ])
+    const responseStopData = await fetch(
+      `${process.env.REACT_APP_DATA_URL}/stops/${stopURLEncoded}.json`
+    )
 
-    const [
-      travelTimesMonday,
-      travelTimesSaturday,
-      travelTimesSunday,
-      stopStats
-    ] = await Promise.all([
-      responseTravelTimesMonday.json(),
-      responseTravelTimesSaturday.json(),
-      responseTravelTimesSunday.json(),
-      responseStopStats.json()
-    ])
-
-    // Closest last, so markers are on top
-    travelTimesMonday['destinations'].reverse()
-    travelTimesSaturday['destinations'].reverse()
-    travelTimesSunday['destinations'].reverse()
-
-    const stopData = {
-      travelTimes: {
-        Werktag: travelTimesMonday,
-        Samstag: travelTimesSaturday,
-        Sonntag: travelTimesSunday
-      },
-      stats: stopStats
-    }
+    const stopData = await responseStopData.json()
 
     selectedStopDispatch({ type: ACTION_TYPES.FETCH_SUCCESS, stop: stopData })
     window.location.hash = fixedEncodeURIComponent(stop)
