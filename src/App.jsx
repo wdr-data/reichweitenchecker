@@ -596,7 +596,9 @@ function App () {
               {ranking}
               <h3 className={styles.chartTitle}>Abfahrten pro Stunde</h3>
               {heatmap}
-              <h3 className={styles.chartTitle}>Verkehrsmittel</h3>
+              <h3 className={styles.chartTitle}>
+                Von dieser Haltestelle fahren:
+              </h3>
               {routeTypes}
             </div>
           )}
