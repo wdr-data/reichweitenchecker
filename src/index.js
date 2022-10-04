@@ -39,7 +39,8 @@ const theme = createTheme({
       marginTop: '0'
     },
     h6: {
-      lineHeight: '2.5'
+      paddingTop: '1rem',
+      paddingBottom: '0.5rem'
     }
   },
   palette: {
