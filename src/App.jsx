@@ -13,6 +13,7 @@ import VirtualizedAutocomplete from './VirtualizedAutocomplete'
 import HeatMap from './HeatMap'
 import Map from './Map'
 import FAQ from './FAQ'
+import Contact from './Contact'
 import { format } from './util'
 
 const DAYS_LESS = ['Werktag', 'Samstag', 'Sonntag']
@@ -184,6 +185,15 @@ function App () {
     setFaqOpen(false)
   }, [selectedStop])
 
+  // Contact dialog handling
+  const [contactOpen, setContactOpen] = useState(false)
+  const handleContactClose = useCallback(() => {
+    window.location.hash = selectedStop.available
+      ? fixedEncodeURIComponent(selectedStop.stopName)
+      : ''
+    setContactOpen(false)
+  }, [selectedStop])
+
   const [day, setDay] = useState('Werktag')
 
   // Load travel stops on page load
@@ -252,13 +262,20 @@ function App () {
   }, [])
 
   // Listen to location hash changes
+  // TODO: Holy shit this is ugly, need to refactor this with react-router or something
   useEffect(() => {
     const handleHashChange = () => {
       if (window.location.hash === '#faq') {
         setFaqOpen(true)
+        setContactOpen(false)
+        return
+      } else if (window.location.hash === '#contact') {
+        setContactOpen(true)
+        setFaqOpen(false)
         return
       } else {
         setFaqOpen(false)
+        setContactOpen(false)
       }
 
       if (['', '#'].includes(window.location.hash)) {
@@ -288,6 +305,9 @@ function App () {
     if (window.location.hash) {
       if (window.location.hash === '#faq') {
         setFaqOpen(true)
+        return
+      } else if (window.location.hash === '#contact') {
+        setContactOpen(true)
         return
       } else if (window.location.hash === '#close') {
         window.location.hash = ''
@@ -550,6 +570,7 @@ function App () {
         </a>
       </div>
       <FAQ open={faqOpen} handleClose={handleFAQClose} />
+      <Contact open={contactOpen} handleClose={handleContactClose} />
       <div className={styles.content}>
         <div className={styles.stopInfo}>
           {searchField}
@@ -586,7 +607,7 @@ function App () {
         &nbsp;|&nbsp;
         <a href='https://www1.wdr.de/hilfe/datenschutz102.html'>Datenschutz</a>
         &nbsp;|&nbsp;
-        <a href='https://www1.wdr.de/kontakt/index.html'>Kontakt</a>
+        <a href='#contact'>Kontakt</a>
       </div>
     </div>
   )
