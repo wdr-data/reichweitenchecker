@@ -187,7 +187,13 @@ export default function Map ({ selectedStop, day, ...props }) {
           time: -1 * destination.time,
           description: `<b>${destination['name']}</b>
           <br />
-          Erreichbar in ${format((destination['time'] / 60).toFixed(1))} min
+          ${
+            destination['from'] &&
+            destination['from'] !== selectedStop.stop.stats.stop_name
+              ? `Abfahrt von ${destination['from']} <br />`
+              : ''
+          }
+          Erreichbar in ${Math.ceil(destination['time'] / 60)} min
           <br />
           Erfordert ${destination['trans']} Mal umsteigen`
         }
