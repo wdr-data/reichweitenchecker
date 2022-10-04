@@ -6,6 +6,20 @@ import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { TourProvider } from '@reactour/tour'
 
+// Analytics
+import { pianoAnalytics } from 'piano-analytics-js'
+
+pianoAnalytics.setConfigurations({
+  site: 621455,
+  collectDomain: 'https://logs1414.xiti.com'
+})
+
+pianoAnalytics.sendEvent('page.display', {
+  's:site_level2': 'data.wdr.de',
+  's:page_title': 'WDR-Reichweiten-Checker',
+  's:page_type': 'DDJ-Projekt'
+})
+
 const theme = createTheme({
   typography: {
     fontFamily: ['Thesis', 'sans-serif'].join(','),
