@@ -24,8 +24,8 @@ pianoAnalytics.sendEvent('page.display', {
   's:page_chapter1': 'DDJ-Projekt',
   's:page_chapter2': 'WDR-Reichweiten-Checker',
   's:page': 'data.wdr.de_Interaktive Web-Anwendung_WDR-Reichweiten-Checker',
-  'd:publication_time': '2022-10-06',
-  'd:last_editorial_update': '2022-10-06'
+  'd:publication_time': '2022-10-05',
+  'd:last_editorial_update': '2022-10-05'
 })
 
 const theme = createTheme({
