@@ -324,9 +324,9 @@ export default function Map ({ selectedStop, day, ...props }) {
 
   return (
     <div className={styles.mapWrap}>
+      {mapControls}
       <div ref={mapContainer} className={styles.map} />
       {props.children}
-      {mapControls}
     </div>
   )
 }
