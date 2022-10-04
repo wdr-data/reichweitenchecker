@@ -6,6 +6,7 @@ import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Skeleton from '@mui/material/Skeleton'
 import { useTour } from '@reactour/tour'
+import { pianoAnalytics } from 'piano-analytics-js'
 
 import styles from './App.module.scss'
 import VirtualizedAutocomplete from './VirtualizedAutocomplete'
@@ -269,6 +270,12 @@ function App () {
 
     selectedStopDispatch({ type: ACTION_TYPES.FETCH_SUCCESS, stop: stopData })
     window.location.hash = fixedEncodeURIComponent(stop)
+
+    // pianoAnalytics.sendEvent('page.display', {
+    //   's:site_level2': 'data.wdr.de',
+    //   's:page_title': 'WDR-Reichweiten-Checker',
+    //   's:page_type': 'DDJ-Projekt'
+    // })
   }, [])
 
   // Listen to location hash changes

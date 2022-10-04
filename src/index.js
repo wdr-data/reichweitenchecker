@@ -9,15 +9,20 @@ import { TourProvider } from '@reactour/tour'
 // Analytics
 import { pianoAnalytics } from 'piano-analytics-js'
 
-pianoAnalytics.setConfigurations({
-  site: 621455,
-  collectDomain: 'https://logs1414.xiti.com'
-})
+// pianoAnalytics.setConfigurations({
+//   site: 621455,
+//   collectDomain: 'https://logs1414.xiti.com'
+// })
 
 pianoAnalytics.sendEvent('page.display', {
   's:site_level2': 'data.wdr.de',
+  's:brand': 'WDR',
+  's:platform': 'Web',
+  's:editorial_department': 'WDR Newsroom',
+  's:page_type': 'DDJ-Projekt',
   's:page_title': 'WDR-Reichweiten-Checker',
-  's:page_type': 'DDJ-Projekt'
+  's:page_chapter1': 'DDJ-Projekt',
+  's:page_chapter2': 'WDR-Reichweiten-Checker'
 })
 
 const theme = createTheme({
