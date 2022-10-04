@@ -88,7 +88,12 @@ export default function FAQ ({ open, handleClose }) {
             Zahlen für Werktage sind also Durchschnittswerte für den 12. bis 17.
             September, Zahlen für samstags beziehen sich auf den 18. September
             und für sonntags auf den 19. September 2022. Die Daten beinhalten
-            sowohl Nah- als auch Fernverkehr.
+            sowohl Nah- als auch Fernverkehr. Sie werden{' '}
+            <Link href='https://www.opendata-oepnv.de/ht/de/organisation/delfi/startseite?tx_vrrkit_view%5Bdataset_name%5D=deutschlandweite-sollfahrplandaten-gtfs&tx_vrrkit_view%5Baction%5D=details&tx_vrrkit_view%5Bcontroller%5D=View'>
+              unter diesem Link
+            </Link>{' '}
+            regelmäßig im GTFS-Format veröffentlicht (verwendeter Datensatz war
+            vom 29. August 2022).
           </Typography>
 
           <Typography variant='h6' component='h3'>
@@ -130,6 +135,9 @@ export default function FAQ ({ open, handleClose }) {
             Bahnhof “Leverkusen Mitte” offiziell “Leverkusen Wiesdorf Mitte
             Bf”). Über eine Kombination aus dem Ort und dem Haltestellennamen
             sollten die Stationen aber in der Regel gut auffindbar sein.
+            Einzelne Haltestellen können auch fehlen, weil die vorliegenden
+            Daten offensichtlich fehlerhaft sind oder weil an dieser Haltestelle
+            im Auswertungszeitraum gar keine Fahrten verkehren.
           </Typography>
 
           <Typography variant='h6' component='h3'>
@@ -147,6 +155,67 @@ export default function FAQ ({ open, handleClose }) {
               newsroom-stories@wdr.de
             </Link>
             .
+          </Typography>
+
+          <Typography variant='h6' component='h3'>
+            Genutzte Software
+          </Typography>
+
+          <Typography>
+            Wir haben für diese Auswertung verschiedene frei verfügbare Daten
+            und Programme benutzt. Bei den Urhebern wollen wir uns an dieser
+            Stelle bedanken!
+            <ul>
+              <li>
+                <b>tidytransit</b>: Auswertung von GTFS-Fahrplan-Daten mit dem
+                Statistik-Programm R –{' '}
+                <Link href='https://github.com/r-transit/tidytransit'>
+                  GitHub
+                </Link>
+              </li>
+              <li>
+                <b>gtfs-kit</b>: Verarbeitung von GTFS-Fahrplan-Daten mit Python
+                –{' '}
+                <Link href='https://gitlab.com/mrcagney/gtfs_kit'>GitLab</Link>
+              </li>
+              <li>
+                <b>
+                  <Link href='https://www.delfi.de/'>DELFI e. V.</Link>
+                </b>
+                : Freie Bereitstellung von Deutschlandweiten Fahrplandaten im
+                GTFS-Format
+              </li>
+              <li>
+                <b>
+                  <Link href='https://www.openstreetmap.org/copyright'>
+                    OpenStreetMap Mitwirkende
+                  </Link>
+                </b>
+                : Gemeinschaftlich erstelltes Kartenmaterial
+              </li>
+              <li>
+                <b>tilemaker</b>: Erzeugen von Maptiles aus OSM-Daten –{' '}
+                <Link href='https://github.com/systemed/tilemaker'>GitHub</Link>
+              </li>
+              <li>
+                <b>mbtileserver</b>: Server für Maptiles –{' '}
+                <Link href='https://github.com/consbio/mbtileserver'>
+                  GitHub
+                </Link>
+              </li>
+              <li>
+                <b>maplibre-gl-js</b>: Webkomponente zur Kartendarstellung –{' '}
+                <Link href='https://github.com/maplibre/maplibre-gl-js'>
+                  GitHub
+                </Link>
+              </li>
+              <li>
+                <b>
+                  <Link href='https://openmaptiles.org/'>OpenMapTiles</Link>
+                </b>
+                : Freie Designs für die Kartendarstellung
+              </li>
+            </ul>
           </Typography>
 
           <Typography variant='h6' component='h3'>

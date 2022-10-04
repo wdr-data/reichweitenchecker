@@ -15,6 +15,9 @@ const theme = createTheme({
     body1: {
       marginBottom: '.75rem',
       marginTop: '0'
+    },
+    h6: {
+      lineHeight: '2.5'
     }
   },
   palette: {
