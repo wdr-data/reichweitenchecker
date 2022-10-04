@@ -112,14 +112,15 @@ export default function FAQ ({ open, handleClose }) {
           </Typography>
 
           <Typography>
-            Der verwendete Algorithmus geht davon aus, dass zwischen Stationen
-            nicht gelaufen wird, es werden also nur Verbindungen ausgegeben, bei
-            denen maximal innerhalb einer einzelnen Haltestelle von einem Gleis
-            zum anderen gelaufen wird. Das kann dazu führen, dass für nah
-            beieinander liegende Haltestellen (z.B. Köln/Dom und Köln/Hbf) lange
-            Reisezeiten angezeigtwerden, obwohl sie zu Fuß in wenigen Minuten
-            erreichbar wären. Ein manuelles “Finetuning” einzelner Verbindungen
-            war bei der großen Menge an Daten aber leider nicht möglich.
+            Für die Berechnung der erreichbaren Haltestellen gelten folgende
+            Grundannahmen: Fußwege bis maximal 500 Meter sind möglich, auch
+            direkt zu Beginn – falls die Fahrt von einer anderen Haltestelle aus
+            startet, ist das im Popup vermerkt. Außerdem wird die Zahl der
+            Umstiege auf maximal drei begrenzt. Der RAPTOR-Algorithmus ist
+            grundsätzlich so eingestellt, dass versucht wird, die kürzeste
+            Verbindung zu einer Haltestelle zu finden – das Ergebnis wurde für
+            dieses Dashboard aber so angepasst, dass Fahrten ohne Umstiege immer
+            bevorzugt werden.
           </Typography>
 
           <Typography variant='h6' component='h3'>
