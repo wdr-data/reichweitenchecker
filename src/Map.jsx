@@ -229,14 +229,14 @@ export default function Map ({ selectedStop, day, ...props }) {
               ['zoom'],
               // zoom <= 10 -> 5px
               10,
-              5,
+              4,
               // zoom >= 13 -> 11px
               13,
               11
             ],
             'circle-color': ['get', 'color'],
             'circle-stroke-width': 1,
-            'circle-stroke-color': '#000'
+            'circle-stroke-color': 'rgba(0,0,0,0.66)'
           }
         })
       }
