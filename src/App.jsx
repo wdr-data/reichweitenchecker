@@ -5,6 +5,8 @@ import clsx from 'clsx'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Skeleton from '@mui/material/Skeleton'
+import FAQButtonIcon from '@mui/icons-material/HelpCenter'
+import ArticleButtonIcon from '@mui/icons-material/Newspaper'
 import { useTour } from '@reactour/tour'
 import { pianoAnalytics } from 'piano-analytics-js'
 
@@ -557,17 +559,25 @@ function App () {
             className={styles.logo}
           />
         </a>
-        <a
-          href='#faq'
-          aria-label='FAQ anzeigen'
-          className={clsx(styles.faqButton, 'tour-faq')}
-          onClick={() => {
-            setTourIsOpen(false)
-            setFaqOpen(true)
-          }}
-        >
-          &#70;
-        </a>
+        <div>
+          <a
+            href='https://www1.wdr.de/nachrichten/oepnv-nrw-reichweite-verkehr-bus-bahn-100.html'
+            aria-label='Zum begleitenden Artikel auf WDR.de'
+            className={clsx(styles.articleButton, 'tour-article')}
+          >
+            <ArticleButtonIcon fontSize='inherit' />
+          </a>
+          <a
+            href='#faq'
+            aria-label='FAQ anzeigen'
+            className={clsx(styles.faqButton, 'tour-faq')}
+            onClick={() => {
+              setTourIsOpen(false)
+            }}
+          >
+            <FAQButtonIcon fontSize='inherit' />
+          </a>
+        </div>
       </div>
       <FAQ open={faqOpen} handleClose={handleFAQClose} />
       <Contact open={contactOpen} handleClose={handleContactClose} />

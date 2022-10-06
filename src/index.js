@@ -52,19 +52,6 @@ const theme = createTheme({
   }
 })
 
-const tourSteps = [
-  {
-    selector: '.tour-search',
-    content: 'Hier nach Haltestellen in ganz NRW suchen!'
-  },
-  {
-    selector: '.tour-faq',
-    content:
-      'Fragen zur Benutzung oder den Daten? Hier gibt es zusätzliche Informationen.',
-    position: 'left'
-  }
-]
-
 const tourStyles = {
   popover: (base, { x, y, width, height }) => ({
     ...base,
@@ -109,6 +96,45 @@ const tourStyles = {
     height: 20
   })
 }
+
+const tourSteps = [
+  {
+    selector: '.tour-search',
+    content: 'Hier nach Haltestellen in ganz NRW suchen!'
+  },
+  {
+    selector: '.tour-faq',
+    content:
+      'Fragen zur Benutzung oder den Daten? Hier gibt es zusätzliche Informationen.',
+    position: 'left',
+    styles: {
+      ...tourStyles,
+      maskArea: (base, { x, y, width, height }) => ({
+        ...base,
+        rx: 10,
+        height: height - 12,
+        width: width - 12,
+        x: x + 6
+      })
+    }
+  },
+  {
+    selector: '.tour-article',
+    content:
+      'Was wir mit den Daten herausgefunden haben, können Sie hier nachlesen.',
+    position: 'bottom',
+    styles: {
+      ...tourStyles,
+      maskArea: (base, { x, y, width, height }) => ({
+        ...base,
+        rx: 10,
+        height: height - 7,
+        width: width - 4,
+        x: x + 2
+      })
+    }
+  }
+]
 
 const root = ReactDOM.createRoot(document.getElementById('map-widget'))
 root.render(

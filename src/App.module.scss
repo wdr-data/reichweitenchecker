@@ -22,14 +22,26 @@
     margin-top: 2px;
     height: 27px;
   }
-  .faqButton {
-    font-size: 48px;
-    line-height: 48px;
-    margin-top: -2px;
-    margin-right: 1px;
-    font-family: 'WDR Iconfont';
-    text-decoration: none;
-    color: white;
+  > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+
+    a {
+      -webkit-tap-highlight-color: transparent;
+      display: block;
+      line-height: 24px;
+      color: white;
+    }
+
+    .articleButton {
+      font-size: 36px;
+    }
+    .faqButton {
+      font-size: 42px;
+      margin-right: 4px;
+    }
   }
 }
 
