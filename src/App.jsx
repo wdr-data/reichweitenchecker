@@ -6,7 +6,7 @@ import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Skeleton from '@mui/material/Skeleton'
 import FAQButtonIcon from '@mui/icons-material/HelpCenter'
-import ArticleButtonIcon from '@mui/icons-material/Newspaper'
+import ArticleButtonIcon from '@mui/icons-material/Feed'
 import { useTour } from '@reactour/tour'
 import { pianoAnalytics } from 'piano-analytics-js'
 
@@ -552,7 +552,7 @@ function App () {
   return (
     <div className={styles.app}>
       <div className={styles.header}>
-        <a href='https://wdr.de/'>
+        <a href='https://wdr.de/' title='Zu WDR.de'>
           <img
             src={`${process.env.PUBLIC_URL}/img/wdr_logo.svg`}
             alt='WDR Logo'
@@ -562,14 +562,14 @@ function App () {
         <div>
           <a
             href='https://www1.wdr.de/nachrichten/oepnv-nrw-reichweite-verkehr-bus-bahn-100.html'
-            aria-label='Zum begleitenden Artikel auf WDR.de'
+            title='Zum begleitenden Artikel auf WDR.de'
             className={clsx(styles.articleButton, 'tour-article')}
           >
             <ArticleButtonIcon fontSize='inherit' />
           </a>
           <a
             href='#faq'
-            aria-label='FAQ anzeigen'
+            title='Fragen zur Benutzung oder den Daten? Hier gibt es zusätzliche Informationen.'
             className={clsx(styles.faqButton, 'tour-faq')}
             onClick={() => {
               setTourIsOpen(false)

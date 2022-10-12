@@ -121,17 +121,16 @@ const tourSteps = [
   },
   {
     selector: '.tour-article',
-    content:
-      'Was wir mit den Daten herausgefunden haben, können Sie hier nachlesen.',
+    content: 'Was wir mit den Daten herausgefunden haben - hier zum Nachlesen.',
     position: 'bottom',
     styles: {
       ...tourStyles,
       maskArea: (base, { x, y, width, height }) => ({
         ...base,
         rx: 10,
-        height: height - 7,
-        width: width - 4,
-        x: x + 2
+        height: height - 12,
+        width: width - 12,
+        x: x + 6
       })
     }
   }

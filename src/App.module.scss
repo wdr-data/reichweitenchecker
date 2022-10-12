@@ -26,7 +26,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 5px;
+    gap: 0px;
 
     a {
       -webkit-tap-highlight-color: transparent;
@@ -37,6 +37,7 @@
 
     .articleButton {
       font-size: 36px;
+      font-size: 42px;
     }
     .faqButton {
       font-size: 42px;
