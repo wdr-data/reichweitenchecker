@@ -437,13 +437,14 @@ function App () {
             </b>{' '}
             Abfahrten pro Stunde. An{' '}
             <b>
-              {selectedStop.stop.stats['rank_data'][day]['dep_per_day_better'] <
-              0.001
+              {selectedStop.stop.stats['rank_data'][day][
+                'dep_per_hour_avg_better'
+              ] < 0.001
                 ? 'weniger als 0,1'
                 : format(
                     (
                       selectedStop.stop.stats['rank_data'][day][
-                        'dep_per_day_better'
+                        'dep_per_hour_avg_better'
                       ] * 100
                     ).toFixed(1)
                   )}
