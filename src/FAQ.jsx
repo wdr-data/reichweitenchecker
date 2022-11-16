@@ -96,6 +96,14 @@ export default function FAQ ({ open, handleClose }) {
             vom 29. August 2022).
           </Typography>
 
+          <Typography>
+            Nach Rückmeldungen von Userinnen und Usern konnten wir Fehler in
+            unseren Berechnungen für einige Stationen korrigieren, im Vergleich
+            zur ersten Veröffentlichung haben sich die Rahmendaten (Abfahrten
+            pro Stunde, Prozentsatz besserer Stationen in NRW, Heatmap) darum an
+            manchen Stellen leicht verändert.
+          </Typography>
+
           <Typography variant='h6' component='h3'>
             Wie kommt die Karte zustande?
           </Typography>
@@ -216,6 +224,20 @@ export default function FAQ ({ open, handleClose }) {
               : Freie Designs für die Kartendarstellung
             </li>
           </ul>
+
+          <Typography variant='h6' component='h3'>
+            Quellcode
+          </Typography>
+
+          <Typography>
+            Unter dem Motto "Public Money, Public Code" haben wir auch den
+            Quellcode zu diesem Projekt auf GitHub veröffentlicht.
+            <br />
+            <br />
+            <Link href='https://github.com/wdr-data/reichweitenchecker'>
+              Der WDR-Reichweiten-Checker auf GitHub
+            </Link>
+          </Typography>
 
           <Typography variant='h6' component='h3'>
             Datenschutz
