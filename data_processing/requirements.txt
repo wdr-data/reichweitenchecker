@@ -1,0 +1,7 @@
+gtfs-kit
+pandas
+numpy
+geopandas
+shapely
+scipy
+ujson
