@@ -6,27 +6,6 @@ import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { TourProvider } from '@reactour/tour'
 
-// Analytics
-import { pianoAnalytics } from 'piano-analytics-js'
-
-pianoAnalytics.setConfigurations({
-  site: process.env.REACT_APP_ATI_ID,
-  collectDomain: process.env.REACT_APP_ATI_COLLECT_URL
-})
-
-pianoAnalytics.sendEvent('page.display', {
-  's:site_level2': 'data.wdr.de',
-  's:brand': 'WDR',
-  's:platform': 'Web',
-  's:editorial_department': 'Newsroom',
-  's:page_type': 'Interaktive Web-Anwendung',
-  's:page_title': 'WDR-Reichweiten-Checker',
-  's:page_chapter1': 'DDJ-Projekt',
-  's:page_chapter2': 'WDR-Reichweiten-Checker',
-  's:page': 'data.wdr.de_Interaktive Web-Anwendung_WDR-Reichweiten-Checker',
-  'd:publication_time': '2022-10-05',
-  'd:last_editorial_update': '2022-10-05'
-})
 
 const theme = createTheme({
   typography: {
