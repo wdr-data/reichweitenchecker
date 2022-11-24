@@ -7,13 +7,14 @@ import Stack from '@mui/material/Stack'
 import maplibregl from '!maplibre-gl' // ! is important here
 import maplibreglWorker from 'maplibre-gl/dist/maplibre-gl-csp-worker'
 
-import { colorMapAlt, colorMapMain } from './colorMap'
+import { colorMapAlt } from './colorMap'
 
 import styles from './Map.module.scss'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 import customMarkerImg from './img/haltestelle_marker.svg'
-import { format } from './util'
+
+import mapStyle from './map-style.json'
 
 maplibregl.workerClass = maplibreglWorker
 
@@ -49,6 +50,10 @@ const bounds = [
   [11.77, 53.44]
 ]
 
+function getRandomItem(ls) {
+  return ls[Math.floor(Math.random()*ls.length)];
+}
+
 export default function Map ({ selectedStop, day, ...props }) {
   const mapContainer = useRef(null)
   const map = useRef(null)
@@ -62,40 +67,53 @@ export default function Map ({ selectedStop, day, ...props }) {
 
   useEffect(() => {
     if (map.current) return //stops map from intializing more than once
-    map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      style: `${process.env.PUBLIC_URL}/assets/style-v1.json`,
-      center: [7.99, 51.431],
-      zoom: 8,
-      maxBounds: bounds,
-      dragRotate: false,
-      touchPitch: false,
-      attributionControl: false //new maplibregl.AttributionControl()//`<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>`,
-    })
 
-    map.current.addControl(
-      new maplibregl.AttributionControl({
-        customAttribution: [
-          `<a href="https://www.delfi.de/" rel="nofollow" target="_blank">© DELFI</a>`,
-          `<a href="http://openmaptiles.org/" rel="nofollow" target="_blank">© OpenMapTiles</a>`,
-          `<a href="https://www.openstreetmap.org/copyright" rel="nofollow" target="_blank">© OpenStreetMap Mitwirkende</a>`
-        ]
-      }),
-      'bottom-right'
-    )
+    // this is necessary to get the current tile URL
+    // since tile URLs for Bing Maps change regularly
+    // read more about this here: https://learn.microsoft.com/en-us/bingmaps/rest-services/directly-accessing-the-bing-maps-tiles
+    fetch(`http://dev.virtualearth.net/REST/V1/Imagery/Metadata/RoadOnDemand?output=json&include=ImageryProviders&key=${process.env.REACT_APP_BING_KEY}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const resource = data.resourceSets[0].resources[0]
+        const subdomain = getRandomItem(resource.imageUrlSubdomains) // use a random subdomain
+        const imageURL = resource.imageUrl.replace(/{subdomain}/g, subdomain)
+        mapStyle.sources.bing.tiles = [imageURL]
 
-    map.current.touchZoomRotate.disableRotation()
-    map.current.fitBounds([
-      [5.8941, 50.3103],
-      [9.4868, 52.5295]
-    ])
-    map.current.addControl(
-      new maplibregl.NavigationControl({
-        showCompass: false,
-        visualizePitch: false
-      }),
-      'bottom-right'
-    )
+        map.current = new maplibregl.Map({
+          container: mapContainer.current,
+          style: mapStyle,
+          zoom: 8,
+          center: [13.42475, 52.50720], // center of berlin
+          // maxBounds: bounds, // TODO add max bounds
+          dragRotate: false,
+          touchPitch: false,
+          attributionControl: false //new maplibregl.AttributionControl()//`<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>`,
+        })
+    
+        map.current.addControl(
+          new maplibregl.AttributionControl({
+            customAttribution: [
+              `<a href="https://www.microsoft.com/" rel="nofollow" target="_blank">© 2022 Microsoft Corporation</a>`,
+              `<a href="https://www.delfi.de/" rel="nofollow" target="_blank">© DELFI</a>`,
+            ]
+          }),
+          'bottom-right'
+        )
+    
+        map.current.touchZoomRotate.disableRotation()
+        // TODO fit bounds
+        // map.current.fitBounds([
+        //   [5.8941, 50.3103],
+        //   [9.4868, 52.5295]
+        // ])
+        map.current.addControl(
+          new maplibregl.NavigationControl({
+            showCompass: false,
+            visualizePitch: false
+          }),
+          'bottom-right'
+        )
+      });
 
     return () => {
       map.current.remove()

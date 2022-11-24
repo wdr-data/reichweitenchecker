@@ -1,0 +1,23 @@
+{
+  "version": 8,
+  "name": "rbb",
+  "sources": {
+    "bing": {
+			"type": "raster",
+			"tiles": [],
+			"tileSize": 256,
+      "maxzoom": 19
+    }
+  },
+  "layers": [
+    {
+      "id": "bing",
+      "type": "raster",
+      "source": "bing"
+    }
+  ],
+  "transition": {
+    "duration": 250,
+    "delay": 0
+  }
+}
