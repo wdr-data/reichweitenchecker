@@ -50,9 +50,8 @@ const bounds = [
   [11.77, 53.44]
 ]
 
-function getRandomItem(ls) {
-  return ls[Math.floor(Math.random()*ls.length)];
-}
+// see: https://learn.microsoft.com/en-us/bingmaps/rest-services/imagery/get-imagery-metadata
+const imagerySet = 'RoadOnDemand'
 
 export default function Map ({ selectedStop, day, ...props }) {
   const mapContainer = useRef(null)
@@ -71,13 +70,13 @@ export default function Map ({ selectedStop, day, ...props }) {
     // this is necessary to get the current tile URL
     // since tile URLs for Bing Maps change regularly
     // read more about this here: https://learn.microsoft.com/en-us/bingmaps/rest-services/directly-accessing-the-bing-maps-tiles
-    fetch(`http://dev.virtualearth.net/REST/V1/Imagery/Metadata/RoadOnDemand?output=json&include=ImageryProviders&key=${process.env.REACT_APP_BING_KEY}`)
+    fetch(`https://dev.virtualearth.net/REST/V1/Imagery/Metadata/${imagerySet}?uriScheme=https&output=json&include=ImageryProviders&key=${process.env.REACT_APP_BING_KEY}`)
       .then((res) => res.json())
       .then((data) => {
         const resource = data.resourceSets[0].resources[0]
-        const subdomain = getRandomItem(resource.imageUrlSubdomains) // use a random subdomain
-        const imageURL = resource.imageUrl.replace(/{subdomain}/g, subdomain)
-        mapStyle.sources.bing.tiles = [imageURL]
+        mapStyle.sources.bing.tiles = resource.imageUrlSubdomains.map(
+          (subdomain) => resource.imageUrl.replace(/{subdomain}/g, subdomain)
+        )
 
         map.current = new maplibregl.Map({
           container: mapContainer.current,

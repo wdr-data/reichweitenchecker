@@ -1,7 +1,7 @@
 {
   "name": "map-widget",
   "version": "0.1.0",
-  "homepage": "https://data.wdr.de/ddj/reichweitenchecker/",
+  "homepage": "https://storage.googleapis.com/rbb-data-static/2022-11-public-transport/app/",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.0",
@@ -30,7 +30,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "serve": "python serve_data.py"
+    "serve": "python serve_data.py",
+    "deploy": "scripts/deploy-to-gcs.sh --build",
+    "upload-data": "scripts/upload-data.sh"
   },
   "eslintConfig": {
     "extends": [
