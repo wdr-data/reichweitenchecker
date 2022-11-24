@@ -19,18 +19,18 @@ library(geojsonsf)
 args <- commandArgs(trailingOnly = TRUE)
 DAY_NAME <- args[1]
 
-if (DAY_NAME == "monday") {
+if (DAY_NAME == "wednesday") {
   START_TIME <- 6 * 3600
   END_TIME <- 10 * 3600
-  DAY <- "2022-09-12"
+  DAY <- "2022-11-16"
 } else if (DAY_NAME == "saturday") {
   START_TIME <- 10 * 3600
   END_TIME <- 14 * 3600
-  DAY <- "2022-09-17"
+  DAY <- "2022-11-19"
 } else if (DAY_NAME == "sunday") {
   START_TIME <- 10 * 3600
   END_TIME <- 14 * 3600
-  DAY <- "2022-09-18"
+  DAY <- "2022-11-20"
 } else {
   print("Invalid day")
   quit()
@@ -46,7 +46,7 @@ gtfs_de <- read_gtfs("data/20220829_preprocessed.zip", quiet = FALSE)
 
 print("Generating stop names...")
 # Geo-Daten NRW laden
-geo_nrw <- st_read("data/gemeinden_geo.json")
+geo_nrw <- st_read("data/gemeinden_be_bb_geo.json")
 
 # Stationen in SF umwandeln und dann nach NRW filtern
 all_stops <-
@@ -56,7 +56,9 @@ all_stops <-
   )
 
 nrw_stops <- st_join(all_stops, geo_nrw, join = st_within, left = FALSE)
-unique_stop_names <- unique(nrw_stops$stop_name)
+# TODO: for now, computed for a small subsample
+# unique_stop_names <- unique(nrw_stops$stop_name)
+unique_stop_names <- head(unique(nrw_stops$stop_name))
 rm(geo_nrw, all_stops, nrw_stops)
 
 # Filter existing files
@@ -76,8 +78,9 @@ rm(gtfs_de)
 # Cluster setup
 gc()
 
+# TODO: choose cores
 print("Setting up cluster...")
-no_cores <- 72 # detectCores() / 2
+no_cores <- 2 # detectCores() / 2
 cl <- makeCluster(no_cores, type = "FORK")
 
 print("Running...")

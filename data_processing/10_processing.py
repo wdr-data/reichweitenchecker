@@ -16,7 +16,7 @@ import ujson as json
 
 day = argv[1]
 
-assert day in ["monday", "saturday", "sunday"]
+assert day in ["wednesday", "saturday", "sunday"]
 
 travel_times_dir = Path(f"data/travel_times_{day}")
 travel_times_notrans_dir = Path(f"data/travel_times_{day}_notrans")
@@ -33,7 +33,7 @@ name_for_file = dict(zip(files, station_names))
 feed = read_feed("data/20220829_preprocessed.zip", "m")
 
 # Load Bundesland borders
-nw_hi: gp.GeoDataFrame = gp.read_file("data/gemeinden_geo.json")
+nw_hi: gp.GeoDataFrame = gp.read_file("data/gemeinden_be_bb_geo.json")
 
 stops_in_nw = feed.get_stops_in_area(nw_hi)
 stop_names_in_nw = set(stops_in_nw["stop_name"].unique())

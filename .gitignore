@@ -24,3 +24,4 @@ yarn-error.log*
 
 # lots of files
 /data
+/data_processing/data

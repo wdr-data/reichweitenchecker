@@ -6,7 +6,7 @@ library(geojsonsf)
 
 # Read GTFS data from DELFI
 # DELFI-Daten laden
-delfi <- read_gtfs("data/20220829_fahrplaene_gesamtdeutschland_gtfs.zip", 
+delfi <- read_gtfs("data/20221114_fahrplaene_gesamtdeutschland_gtfs.zip", 
                    files = c("agency", "calendar_dates", "calendar", "frequencies",
                              "routes", "shapes", "stop_times", "stops",
                              "transfers", "trips"),
@@ -18,7 +18,7 @@ library(dtplyr)
 library(data.table)
 
 # geo data for NRW
-geo_nrw <- st_read("data/gemeinden_geo.json")
+geo_nrw <- st_read("data/gemeinden_be_bb_geo.json")
 
 # filter stations in NRW: convert to sf and join
 all_stops <- st_as_sf(delfi$stops, coords=c("stop_lon", "stop_lat"), crs=4326)
@@ -48,7 +48,7 @@ fwrite(stations_coords, "data/stations_coords.csv")
 
 service_0912 <- full_join(
   delfi$calendar %>% filter(monday == 1),
-  delfi$calendar_dates %>% filter(date == "2022-09-12"),
+  delfi$calendar_dates %>% filter(date == "2022-11-14"),
   by = "service_id"
   ) %>% 
   replace_na(replace=list(exception_type=0)) %>% 
@@ -56,7 +56,7 @@ service_0912 <- full_join(
 
 service_0913 <- full_join(
   delfi$calendar %>% filter(tuesday == 1),
-  delfi$calendar_dates %>% filter(date == "2022-09-13"),
+  delfi$calendar_dates %>% filter(date == "2022-11-15"),
   by = "service_id"
   ) %>% 
   replace_na(replace=list(exception_type=0)) %>% 
@@ -64,7 +64,7 @@ service_0913 <- full_join(
 
 service_0914 <- full_join(
   delfi$calendar %>% filter(wednesday == 1),
-  delfi$calendar_dates %>% filter(date == "2022-09-14"),
+  delfi$calendar_dates %>% filter(date == "2022-11-16"),
   by = "service_id"
   ) %>% 
   replace_na(replace=list(exception_type=0)) %>% 
@@ -72,7 +72,7 @@ service_0914 <- full_join(
 
 service_0915 <- full_join(
   delfi$calendar %>% filter(thursday == 1),
-  delfi$calendar_dates %>% filter(date == "2022-09-15"),
+  delfi$calendar_dates %>% filter(date == "2022-11-17"),
   by = "service_id"
   ) %>% 
   replace_na(replace=list(exception_type=0)) %>% 
@@ -80,7 +80,7 @@ service_0915 <- full_join(
 
 service_0916 <- full_join(
   delfi$calendar %>% filter(friday == 1),
-  delfi$calendar_dates %>% filter(date == "2022-09-16"),
+  delfi$calendar_dates %>% filter(date == "2022-11-18"),
   by = "service_id"
 ) %>% 
   replace_na(replace=list(exception_type=0)) %>% 
@@ -88,7 +88,7 @@ service_0916 <- full_join(
 
 service_0917 <- full_join(
   delfi$calendar %>% filter(saturday == 1),
-  delfi$calendar_dates %>% filter(date == "2022-09-17"),
+  delfi$calendar_dates %>% filter(date == "2022-11-19"),
   by = "service_id"
 ) %>% 
   replace_na(replace=list(exception_type=0)) %>% 
@@ -96,7 +96,7 @@ service_0917 <- full_join(
 
 service_0918 <- full_join(
   delfi$calendar %>% filter(sunday == 1),
-  delfi$calendar_dates %>% filter(date == "2022-09-18"),
+  delfi$calendar_dates %>% filter(date == "2022-11-20"),
   by = "service_id"
 ) %>% 
   replace_na(replace=list(exception_type=0)) %>% 

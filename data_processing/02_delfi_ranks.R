@@ -20,13 +20,15 @@ data_days <- data_comparison %>%
             rt_Bahn = mean(rt_Bahn),
             rt_Bus = mean(rt_Bus),
             rt_Fernzug = mean(rt_Fernzug),
-            rt_Fähre = mean(rt_Fähre),
             rt_Hochgeschwindigkeitszug = mean(rt_Hochgeschwindigkeitszug),
-            "rt_Kabel-Straßenbahn" = mean(`rt_Kabel-Straßenbahn`),
             rt_Regionalbahn = mean(rt_Regionalbahn),
             "rt_S-Bahn" = mean(`rt_S-Bahn`),
-            rt_Straßenbahn = mean(rt_Straßenbahn),
-            "rt_U-Bahn" = mean(`rt_U-Bahn`)
+            "rt_U-Bahn" = mean(`rt_U-Bahn`),
+            rt_Zug = mean(rt_Zug),
+            rt_InterRegio = mean(rt_InterRegio),
+            "rt_Sightseeing-Bus" = mean(`rt_Sightseeing-Bus`),
+            rt_Tram = mean(rt_Tram),
+            rt_Wassertransport = mean(rt_Wassertransport)
             )
 
 # create empty dataset for merging, contains one row per kind of day and station
@@ -44,13 +46,15 @@ data_days_full <- left_join(three_day, data_days, by=c("stop_name", "day")) %>%
       "rt_Bahn" = 0,
       "rt_Bus" = 0,
       "rt_Fernzug" = 0,
-      "rt_Fähre" = 0,
       "rt_Hochgeschwindigkeitszug" = 0,
-      "rt_Kabel-Straßenbahn" = 0,
       "rt_Regionalbahn" = 0,
       "rt_S-Bahn" = 0,
-      "rt_Straßenbahn" = 0,
-      "rt_U-Bahn" = 0
+      "rt_U-Bahn" = 0,
+      rt_Zug = 0,
+      rt_InterRegio = 0,
+      "rt_Sightseeing-Bus" = 0,
+      rt_Tram = 0,
+      rt_Wassertransport = 0
     )
   )
 

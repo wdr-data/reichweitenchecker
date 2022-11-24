@@ -67,13 +67,15 @@ def process_stop(stop_name: str, df: pd.DataFrame, df_ranks: pd.DataFrame):
         "rt_Bahn",
         "rt_Bus",
         "rt_Fernzug",
-        "rt_Fähre",
         "rt_Hochgeschwindigkeitszug",
-        "rt_Kabel-Straßenbahn",
         "rt_Regionalbahn",
         "rt_S-Bahn",
-        "rt_Straßenbahn",
         "rt_U-Bahn",
+        "rt_Zug",
+        "rt_InterRegio",
+        "rt_Sightseeing-Bus",
+        "rt_Tram",
+        "rt_Wassertransport"
     ]
 
     df_group_by_day = df.groupby(by=["weekday"], as_index=False).aggregate(

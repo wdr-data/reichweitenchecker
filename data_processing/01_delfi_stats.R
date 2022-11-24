@@ -66,17 +66,22 @@ library(data.table)
 day_list <- c("0912", "0913", "0914", "0915", "0916", "0917", "0918")
 
 # prepare "translation" for transportation types
+# from: https://developers.google.com/transit/gtfs/reference#routestxt
+# extended types from: https://developers.google.com/transit/gtfs/reference/extended-route-types
 route_types = c(
-  "0" = "Straßenbahn", 
   "1" = "U-Bahn", 
   "2" = "Bahn", 
   "3" = "Bus", 
-  "4" = "Fähre", 
-  "5" = "Kabel-Straßenbahn", 
+  "100" = "Zug", # Railway Service
   "101" = "Hochgeschwindigkeitszug",
   "102" = "Fernzug",
+  "103" = "InterRegio", # Inter Regional Rail Service
   "106" = "Regionalbahn",
-  "109" = "S-Bahn"
+  "109" = "S-Bahn",
+  "400" = "U-Bahn", # Urban Railway Service
+  "700" = "Sightseeing-Bus", # Sightseeing Bus
+  "900" = "Tram", # Tram Service
+  "1000" = "Wassertransport" # Water Transport Service
   )
 
 # prepare function to switch to next day if departure is later than midnight
@@ -169,7 +174,7 @@ stations_raw <- fread("data/stations_coords.csv")
 stations_to_join <- lazy_dt(stations_raw) %>% 
   mutate(lat = str_extract(geometry, "\\|.*") %>% str_remove("\\|") %>% as.double(),
          lon = str_extract(geometry, ".*\\|") %>% str_remove("\\|") %>% as.double()) %>% 
-  select(stop_name, lat, lon, "municipality" = "GN", "AGS" = "KN") %>% 
+  select(stop_name, lat, lon, "municipality" = "GEN", AGS) %>% 
   as_tibble() %>% 
   # attach renamed stops (at this time only name and municipality)
   bind_rows(rename_municipality)
@@ -228,9 +233,10 @@ fwrite(stats_long_corrected, "data/stats_long_corrected.csv")
 stats_wide <- stats_long_corrected %>% 
   pivot_wider(id_cols = c(stop_name, municipality, AGS, lat, lon, 
                           weekday, dep_per_day, dep_per_hour_avg,
-                          rt_Bahn, rt_Bus, rt_Fernzug, "rt_Fähre", rt_Hochgeschwindigkeitszug,
-                          "rt_Kabel-Straßenbahn", rt_Regionalbahn, "rt_S-Bahn",
-                          "rt_Straßenbahn", "rt_U-Bahn"),
+                          rt_Bahn, rt_Bus, rt_Fernzug, rt_Hochgeschwindigkeitszug,
+                          rt_Regionalbahn, "rt_S-Bahn",
+                          "rt_U-Bahn", rt_Zug, rt_InterRegio,
+                          "rt_Sightseeing-Bus", rt_Tram, rt_Wassertransport),
               names_from = dep_hour_cor, values_from = dep_per_hour_cor,
               names_glue = "dep_count_{str_pad(dep_hour_cor, width=2, side='left', pad='0')}h") %>% 
   relocate(stop_name, municipality, AGS, lat, lon, 

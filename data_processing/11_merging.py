@@ -14,9 +14,9 @@ DATA_DIR = Path("data")
 
 file_stops = DATA_DIR / "stops.json"
 
-dir_stats = Path("stop_stats_ranked")
+dir_stats = DATA_DIR / Path("stop_stats_ranked")
 
-dir_monday = DATA_DIR / "travel_times_proc_monday_combine"
+dir_monday = DATA_DIR / "travel_times_proc_wednesday_combine"
 dir_saturday = DATA_DIR / "travel_times_proc_saturday_combine"
 dir_sunday = DATA_DIR / "travel_times_proc_sunday_combine"
 
@@ -25,6 +25,9 @@ target_path.mkdir(exist_ok=True)
 
 with open(file_stops, "r", encoding="utf-8") as f:
     stops = json.load(f)
+
+# sample_stops = ["U Hansaplatz (Berlin)", "U Wilmersdorfer Str. (Berlin)", "U Theodor-Heuss-Platz (Berlin)", "Messedamm/ZOB (Berlin)", "S+U Yorckstr. (Großgörschenstr.) (Berlin)", "S+U Yorckstr. (Berlin)"]
+# stops = [s for s in stops if s[0] in sample_stops]
 
 
 def process_stop(stop_name):
