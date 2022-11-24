@@ -2,6 +2,17 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Development
+
+### Run locally
+
+```bash
+# serves files in data/ from localhost:9001
+npm run serve
+# start app
+npm run start
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
