@@ -17,6 +17,7 @@ import Map from './Map'
 import FAQ from './FAQ'
 import Contact from './Contact'
 import { format } from './util'
+import ArticlesDialog from './ArticlesDialog'
 
 const DAYS_LESS = ['Werktag', 'Samstag', 'Sonntag']
 
@@ -36,11 +37,7 @@ const colorMapRouteTypes = {
 function fixedEncodeURIComponent (str) {
   return encodeURIComponent(str).replace(
     /[!'()*]/g,
-    c =>
-      `%${c
-        .charCodeAt(0)
-        .toString(16)
-        .toUpperCase()}`
+    c => `%${c.charCodeAt(0).toString(16).toUpperCase()}`
   )
 }
 
@@ -51,7 +48,9 @@ function encodeFileName (fileName) {
   )
 }
 
-const startStopName = ['#faq', '#close'].includes(window.location.hash)
+const startStopName = ['#faq', '#contact', '#articles', '#close'].includes(
+  window.location.hash
+)
   ? ''
   : decodeURIComponent(window.location.hash.slice(1))
 
@@ -196,6 +195,15 @@ function App () {
     setContactOpen(false)
   }, [selectedStop])
 
+  // Articles dialog handling
+  const [articlesOpen, setArticlesOpen] = useState(false)
+  const handleArticlesClose = useCallback(() => {
+    window.location.hash = selectedStop.available
+      ? fixedEncodeURIComponent(selectedStop.stopName)
+      : ''
+    setContactOpen(false)
+  }, [selectedStop])
+
   const [day, setDay] = useState('Werktag')
 
   // Load travel stops on page load
@@ -270,14 +278,22 @@ function App () {
       if (window.location.hash === '#faq') {
         setFaqOpen(true)
         setContactOpen(false)
+        setArticlesOpen(false)
         return
       } else if (window.location.hash === '#contact') {
         setContactOpen(true)
         setFaqOpen(false)
+        setArticlesOpen(false)
+        return
+      } else if (window.location.hash === '#articles') {
+        setArticlesOpen(true)
+        setFaqOpen(false)
+        setContactOpen(false)
         return
       } else {
         setFaqOpen(false)
         setContactOpen(false)
+        setArticlesOpen(false)
       }
 
       if (['', '#'].includes(window.location.hash)) {
@@ -307,6 +323,9 @@ function App () {
     if (window.location.hash) {
       if (window.location.hash === '#faq') {
         setFaqOpen(true)
+        return
+      } else if (window.location.hash === '#articles') {
+        setArticlesOpen(true)
         return
       } else if (window.location.hash === '#contact') {
         setContactOpen(true)
@@ -566,9 +585,12 @@ function App () {
         </a>
         <div>
           <a
-            href='https://www1.wdr.de/nachrichten/oepnv-nrw-reichweite-verkehr-bus-bahn-100.html'
-            title='Zum begleitenden Artikel auf WDR.de'
+            href='#articles'
+            title='Begleitende Artikel auf WDR.de lesen'
             className={clsx(styles.articleButton, 'tour-article')}
+            onClick={() => {
+              setTourIsOpen(false)
+            }}
           >
             <ArticleButtonIcon fontSize='inherit' />
           </a>
@@ -584,6 +606,7 @@ function App () {
           </a>
         </div>
       </div>
+      <ArticlesDialog open={articlesOpen} handleClose={handleArticlesClose} />
       <FAQ open={faqOpen} handleClose={handleFAQClose} />
       <Contact open={contactOpen} handleClose={handleContactClose} />
       <div className={styles.content}>

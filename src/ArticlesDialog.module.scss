@@ -1,0 +1,11 @@
+.linkCard {
+  transition: text-decoration-color 0.1s ease-in-out;
+  text-decoration-color: transparent;
+
+  h6 {
+    padding-top: 0;
+  }
+  p {
+    margin-bottom: 0;
+  }
+}
