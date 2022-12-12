@@ -457,18 +457,22 @@ function App () {
             <div
               className={styles.distribution}
               style={{
-                width: `${selectedStop.stop.stats['rank_data'][day][
-                  'dep_per_day_worse'
-                ] * 100}%`,
+                width: `${
+                  selectedStop.stop.stats['rank_data'][day][
+                    'dep_per_day_worse'
+                  ] * 100
+                }%`,
                 backgroundColor: '#444'
               }}
             />
             <div
               className={styles.distribution}
               style={{
-                width: `${selectedStop.stop.stats['rank_data'][day][
-                  'dep_per_day_better'
-                ] * 100}%`,
+                width: `${
+                  selectedStop.stop.stats['rank_data'][day][
+                    'dep_per_day_better'
+                  ] * 100
+                }%`,
                 backgroundColor: '#3a4'
               }}
             />
