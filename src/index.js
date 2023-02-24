@@ -104,6 +104,17 @@ const tourSteps = [
     content: 'Hier nach Haltestellen in ganz NRW suchen!'
   },
   {
+    selector: '.tour-random',
+    content: 'Oder einfach eine zufällige Haltestelle auswählen.',
+    styles: {
+      ...tourStyles,
+      maskArea: base => ({
+        ...base,
+        rx: 10
+      })
+    }
+  },
+  {
     selector: '.tour-faq',
     content:
       'Fragen zur Benutzung oder den Daten? Hier gibt es zusätzliche Informationen.',
