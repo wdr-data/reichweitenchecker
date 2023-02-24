@@ -56,15 +56,15 @@ const startStopName = ['#faq', '#contact', '#articles', '#close'].includes(
 
 const skeleton = (
   <div className={styles.skeleton}>
-    {/* Switch */}
-    <Skeleton variant='rounded' height={30} sx={{ marginTop: '1rem' }} />
-
     {/* Station name */}
     <Skeleton width='60%' sx={{ fontSize: '1.5rem', marginTop: '0.75rem' }} />
     <Skeleton width='30%' />
 
+    {/* Switch */}
+    <Skeleton variant='rounded' height={30} sx={{ marginTop: '1rem' }} />
+
     {/* Station ranking */}
-    <Skeleton width='90%' sx={{ marginTop: '0.75rem' }} />
+    <Skeleton width='90%' sx={{ marginTop: '1rem' }} />
     <Skeleton width='95%' />
     <Skeleton width='85%' />
     <Skeleton width='88%' />
@@ -344,12 +344,9 @@ function App () {
   const searchField = useMemo(
     () => (
       <VirtualizedAutocomplete
-        className={clsx(
-          styles.searchField,
-          !selectedStop.available && styles.searchFieldInitial,
-          'tour-search'
-        )}
+        className={clsx(styles.searchField, 'tour-search')}
         defaultValue={startStopName}
+        value={selectedStop.available ? selectedStop.stopName : null}
         options={travelStops}
         onChange={handleStopChange}
         blurOnSelect={true}
@@ -365,6 +362,52 @@ function App () {
       />
     ),
     [travelStops, handleStopChange, selectedStop, setTourIsOpen]
+  )
+
+  // Random stop selection
+  const chooseRandomStop = useCallback(
+    (percentile, topOrBottom) => {
+      let travelStopsChoice = [...travelStops]
+      if ('top' === topOrBottom) {
+        travelStopsChoice = travelStopsChoice.slice(
+          0,
+          Math.round(percentile * travelStopsChoice.length)
+        )
+      } else if ('bottom' === topOrBottom) {
+        travelStopsChoice = travelStopsChoice.slice(
+          Math.round((1 - percentile) * travelStopsChoice.length)
+        )
+      }
+      const randomStop =
+        travelStopsChoice[Math.floor(Math.random() * travelStopsChoice.length)]
+
+      handleStopChange(null, randomStop)
+    },
+    [handleStopChange, travelStops]
+  )
+
+  const randomSelector = useMemo(
+    () => (
+      <div className={clsx('tour-random', styles.randomSelector)}>
+        <p style={{ marginTop: '0px', marginBottom: '0.5rem' }}>
+          ... oder bring mich zu einer Haltestelle mit:
+        </p>
+        <ButtonGroup
+          disableElevation
+          size='small'
+          className={styles.randomButtonGroup}
+        >
+          <Button onClick={() => chooseRandomStop(0.1, 'top')}>
+            Vielen Fahrten
+          </Button>
+          <Button onClick={() => chooseRandomStop(0.1, 'bottom')}>
+            Wenigen Fahrten
+          </Button>
+          <Button onClick={() => chooseRandomStop(1, 'top')}>Zufall</Button>
+        </ButtonGroup>
+      </div>
+    ),
+    [chooseRandomStop]
   )
 
   // Day selector
@@ -612,15 +655,16 @@ function App () {
       <div className={styles.content}>
         <div className={styles.stopInfo}>
           {searchField}
+          {randomSelector}
           {selectedStop.available && (
             <div className={styles.charts}>
-              {daySelector}
               <h2 className={styles.stopName}>
                 {selectedStop.stop.stats['stop_name']}
               </h2>
-              <span className={styles.municipality}>
+              <p className={styles.municipality}>
                 {selectedStop.stop.stats['municipality']}
-              </span>
+              </p>
+              {daySelector}
               {ranking}
               <h3 className={styles.chartTitle}>Abfahrten pro Stunde</h3>
               {heatmap}
