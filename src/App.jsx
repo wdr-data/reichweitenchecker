@@ -628,6 +628,18 @@ function App () {
         </a>
         <div>
           <a
+            href='https://www.daserste.de/information/reportage-dokumentation/besser-bahnfahren/index.html'
+            target='_blank'
+            rel='noopener noreferrer'
+            title='Jetzt mitmachen bei #besserBahnfahren!'
+            className={clsx(styles.bbfButton, 'tour-bbf')}
+            onClick={() => {
+              setTourIsOpen(false)
+            }}
+          >
+            #besserBahnfahren
+          </a>
+          <a
             href='#articles'
             title='Begleitende Artikel auf WDR.de lesen'
             className={clsx(styles.articleButton, 'tour-article')}

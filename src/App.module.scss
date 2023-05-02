@@ -35,6 +35,26 @@
       color: white;
     }
 
+    .bbfButton {
+      color: var(--brand-primary);
+      background-color: white;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      height: 30px;
+      padding: 0 0.5rem;
+      display: flex;
+      align-items: center;
+      box-shadow: rgba(255, 255, 255, 0.9) 0 0 0 1px;
+      margin-right: 6px;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+      @media screen and (min-width: 768px) {
+        font-size: 18px;
+      }
+    }
     .articleButton {
       font-size: 36px;
       font-size: 42px;
