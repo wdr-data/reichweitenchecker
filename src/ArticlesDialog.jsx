@@ -14,6 +14,7 @@ import styles from './ArticlesDialog.module.scss'
 
 import imageAutoVsOepnv from './img/auto-vs-oepnv.jpg'
 import imageHaltestelleBusEinsam from './img/haltestelle-bus-einsam.jpg'
+import imageStillgelegteSchienen from './img/stillgelegte-schienen.jpg'
 
 export default function ArticlesDialog ({ open, handleClose }) {
   return (
@@ -81,6 +82,30 @@ export default function ArticlesDialog ({ open, handleClose }) {
                   Wer auf dem Land lebt, ist meist nicht gut an Bus und Bahn
                   angebunden. Aber: Es gibt auch Ausnahmen. Von welchen
                   Konzepten ganz NRW lernen kann.
+                </Typography>
+              </CardContent>
+              <div></div>
+            </Card>
+          </Link>
+          <Link
+            href='https://www1.wdr.de/nachrichten/bahn-stillgelegte-strecken-reaktivierung-100.html'
+            className={styles.linkCard}
+            title='Stillgelegte Schienen: So viel Potenzial schlummert in NRW'
+          >
+            <Card>
+              <CardMedia
+                component='img'
+                image={imageStillgelegteSchienen}
+                alt=''
+              />
+              <CardContent>
+                <Typography variant='h6'>
+                  Stillgelegte Schienen: So viel Potenzial schlummert in NRW
+                </Typography>
+                <Typography>
+                  Mit dem 49-Euro-Ticket durch NRW fahren - für viele keine
+                  Option. Es fehlt der Zugang zum Bahnnetz. Wie das
+                  Wiederbeleben von stillgelegten Schienen helfen kann.
                 </Typography>
               </CardContent>
               <div></div>
