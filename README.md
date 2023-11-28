@@ -1,3 +1,10 @@
+# Reichweitenchecker
+
+## License
+All code is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
+All rights reserved for brand names, logos and other trademarks.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
